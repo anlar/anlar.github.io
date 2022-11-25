@@ -17,6 +17,15 @@ theme = 'ananke'
   url = '/post/'
   weight = -100
 
+#defaultContentLanguage = 'en'
+[languages]
+  [languages.en]
+    title = 'Blog in EN'
+    weight = 1
+  [languages.ru]
+    title = 'Блог РУ'
+    weight = 2
+
 # required to access asciidoctor
 [security.exec]
 allow = ["^dart-sass-embedded$", "^go$", "^npx$", "^postcss$", "^asciidoctor$"]
