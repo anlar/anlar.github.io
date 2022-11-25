@@ -4,6 +4,19 @@ title = 'My New Hugo Site'
 
 theme = 'ananke'
 
+#menu = 'main'
+#sectionPagesMenu = "main"
+
+[menu]
+[[menu.main]]
+  name = 'About'
+  url = '/about/'
+  weight = -110
+[[menu.main]]
+  name = 'Blog'
+  url = '/post/'
+  weight = -100
+
 # required to access asciidoctor
 [security.exec]
 allow = ["^dart-sass-embedded$", "^go$", "^npx$", "^postcss$", "^asciidoctor$"]
