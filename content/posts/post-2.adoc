@@ -1,0 +1,14 @@
+---
+title: "Post 2 ADOC"
+date: 2022-11-25T15:49:43+03:00
+draft: true
+summary: Short summary for post 2 adoc
+---
+
+== First section
+
+Some text
+
+== Second section
+
+More test
