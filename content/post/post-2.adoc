@@ -3,7 +3,9 @@ title: "Post 2 ADOC"
 date: 2022-11-25T15:49:43+03:00
 draft: true
 tags: [tag1, tag3]
+categories: [cat1]
 summary: Short summary for post 2 adoc
+toc: true
 ---
 
 == First section
@@ -13,3 +15,17 @@ Some text
 == Second section
 
 More test
+
+## Third section
+
+[cols="1,1"]
+|===
+|Cell in column 1, row 1 
+|Cell in column 2, row 1 
+
+|Cell in column 1, row 2
+|Cell in column 2, row 2
+
+|Cell in column 1, row 3
+|Cell in column 2, row 3 
+|=== 

@@ -2,7 +2,18 @@ baseURL = 'http://example.org/'
 languageCode = 'en-us'
 title = 'My New Hugo Site'
 
-theme = 'ananke'
+#theme = 'ananke'
+#theme = 'flat'
+theme = 'mainroad'
+#theme = 'simple-style'
+
+[Params.sidebar]
+  home = "right" # Configure layout for home page
+  list = "right"  # Configure layout for list pages
+  single = false # Configure layout for single pages
+  # Enable widgets in given order
+  widgets = ["search", "recent", "categories", "taglist", "social", "languages"]
+
 
 #menu = 'main'
 #sectionPagesMenu = "main"
@@ -21,14 +32,64 @@ theme = 'ananke'
   url = '/tags/'
   weight = -90
 
-#defaultContentLanguage = 'en'
+defaultContentLanguage = 'en'
+defaultContentLanguageInSubdir = true
+
 [languages]
   [languages.en]
     title = 'Blog in EN'
     weight = 1
+[[languages.en.menu.main]]
+      name = 'Home'
+      url = '/'
+      weight = 0
+[[languages.en.menu.main]]
+      name = 'Blog'
+      url = '/post'
+      weight = 1
+[[languages.en.menu.main]]
+      name = 'Tags'
+      url = '/tags'
+      weight = 1
+[[languages.en.menu.main]]
+      name = 'Categories'
+      url = '/categories'
+      weight = 1
+[[languages.en.menu.main]]
+      name = 'About'
+      url = '/about'
+      weight = 1
   [languages.ru]
     title = 'Блог РУ'
     weight = 2
+[[languages.ru.menu.main]]
+      name = 'Дом'
+      url = '/ru'
+      weight = 0
+[[languages.ru.menu.main]]
+      name = 'Блог'
+      url = '/ru/post'
+      weight = 1
+[[languages.ru.menu.main]]
+      name = 'Теги'
+      url = '/ru/tags'
+      weight = 1
+[[languages.ru.menu.main]]
+      name = 'Категории'
+      url = '/ru/categories'
+      weight = 1
+[[languages.ru.menu.main]]
+      name = 'Обо мне'
+      url = '/ru/about'
+      weight = 1
+
+[Params.widgets.social]
+  # Enable parts of social widget
+  linkedin = "username"
+  telegram = "username"
+  github = "anlar"
+  bitbucket = "username"
+  email = "example@example.com"
 
 # required to access asciidoctor
 [security.exec]
