@@ -16,6 +16,10 @@ theme = 'ananke'
   name = 'Blog'
   url = '/post/'
   weight = -100
+[[menu.main]]
+  name = 'Tags'
+  url = '/tags/'
+  weight = -90
 
 #defaultContentLanguage = 'en'
 [languages]
