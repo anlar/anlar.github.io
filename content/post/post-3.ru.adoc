@@ -7,9 +7,13 @@ categories: [cat1]
 summary: Short summary for post 3 adoc
 ---
 
+:imagesoutdir: public/ru/post/post-3
+
 == First section
 
 Some text
+
+=== Inner section
 
 == Second section
 
@@ -45,7 +49,7 @@ Foo1 -> Foo2 : To boundary
 Foo1 -> Foo3 : To control
 Foo1 -> Foo4 : To entity
 Foo1 -> Foo5 : To database
-Foo1 -> Foo6 : To collections
+Foo1 -> Foo6 : To collections2
 ----
 
 == Gantt section

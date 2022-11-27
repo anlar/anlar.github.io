@@ -19,6 +19,7 @@ theme = 'mainroad'
 [security.exec]
 allow = ["^dart-sass-embedded$", "^go$", "^npx$", "^postcss$", "^asciidoctor$"]
 
+
 # MENU
 
 [languages]
@@ -92,4 +93,11 @@ allow = ["^dart-sass-embedded$", "^go$", "^npx$", "^postcss$", "^asciidoctor$"]
 [Params.widgets.social]
   github = "anlar"
   linkedin = "anton-larionov"
+
+
+# ASCIIDOCTOR
+
+[markup.asciidocExt]
+  extensions = ["asciidoctor-diagram"]
+  workingFolderCurrent = true
 
