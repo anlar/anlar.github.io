@@ -12,6 +12,8 @@ defaultContentLanguageInSubdir = true
 theme = 'mainroad'
 #theme = 'simple-style'
 
+[permalinks]
+  post = '/:year-:month-:day-:filename/'
 
 # SECURITY
 
