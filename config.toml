@@ -78,6 +78,7 @@ allow = ["^dart-sass-embedded$", "^go$", "^npx$", "^postcss$", "^asciidoctor$"]
 [Params]
   post_meta = ["date", "categories"]
   dateformat = "2006-01-02"
+  customCSS = ["css/coderay.css"]
 
 [Params.sidebar]
   home = "right"
@@ -100,4 +101,6 @@ allow = ["^dart-sass-embedded$", "^go$", "^npx$", "^postcss$", "^asciidoctor$"]
 [markup.asciidocExt]
   extensions = ["asciidoctor-diagram"]
   workingFolderCurrent = true
+  [markup.asciidocExt.attributes]
+    source-highlighter = "coderay"
 
