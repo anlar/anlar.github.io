@@ -1,0 +1,44 @@
+---
+title: "Загрузка SSH-ключей с помощью Ansible"
+date: 2022-12-01T12:04:25+04:00
+draft: true
+tags:
+  - ansible
+  - ssh
+---
+
+TODO: intro
+
+[source,yml,linenums]
+----
+- name: Generate key on head host
+  hosts: head
+  tasks:
+    - name: Generate SSH key
+      community.crypto.openssh_keypair:
+        path: /home/master-user/.ssh/id_ed25519
+        type: ed25519
+        owner: head-user
+        group: head-user
+      register: key_result
+
+    - name: Set public SSH key variable
+      ansible.builtin.set_fact:
+        public_ssh_key: "{{ key_result.public_key }}"
+
+- name: Copy generated SSH public key to nodes
+  hosts: node1,node2,node3
+  tasks:
+    - name: Copy SSH public key
+      ansible.posix.authorized_key:
+        user: node-user
+        state: present
+        key: "{{ hostvars['head']['public_ssh_key'] }}"
+----
+
+TODO: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/known_hosts_module.html
+
+TODO: explanation
+
+TODO: StrictHostKeyChecking=no
+
