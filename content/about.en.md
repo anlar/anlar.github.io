@@ -1,11 +1,6 @@
 ---
-title: "Contact Me"
+title: "Anton Larionov"
 layout: staticpage
 ---
 
-My name
-
-Some contacts:
-- phone
-- email
-
+Software architect and developer.
