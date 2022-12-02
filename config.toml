@@ -105,4 +105,5 @@ allow = ["^dart-sass-embedded$", "^go$", "^npx$", "^postcss$", "^asciidoctor$"]
   workingFolderCurrent = true
   [markup.asciidocExt.attributes]
     source-highlighter = "coderay"
+    listing-caption = "Исходный код"
 
