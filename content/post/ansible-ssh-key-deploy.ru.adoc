@@ -7,26 +7,39 @@ tags:
   - ssh
 ---
 
-TODO: intro
+При развёртывании систем бывает нужно сгенерировать SSH-ключи, которые будут использовать удалённые хосты для доступа друг к другу. Здесь приведён пример плейбука для Ansible, который добавляет на хост `head` новый SSH-ключ и деплоит его на хосты `node*`. Т.е. хост `head` будет ходить по SSH на хосты `node*`.
 
-[source,yml,linenums]
+<!--more-->
+
+.`deploy-ssh-key.yml`
+[source,yml]
 ----
-- name: Generate key on head host
+- name: Generate key on head host <1>
   hosts: head
   tasks:
-    - name: Generate SSH key
+    - name: Generate SSH key <2>
       community.crypto.openssh_keypair:
-        path: /home/master-user/.ssh/id_ed25519
+        path: /home/head-user/.ssh/id_ed25519
         type: ed25519
         owner: head-user
         group: head-user
       register: key_result
 
-    - name: Set public SSH key variable
+    - name: Set public SSH key variable <3>
       ansible.builtin.set_fact:
         public_ssh_key: "{{ key_result.public_key }}"
 
-- name: Copy generated SSH public key to nodes
+    - name: Add host to known_hosts <4>
+      include_tasks:
+        file: add-known-host.yml
+      vars:
+        cfg_node: "{{ item }}"
+      loop:
+        - node1
+        - node2
+        - node3
+
+- name: Copy generated SSH public key to nodes <5>
   hosts: node1,node2,node3
   tasks:
     - name: Copy SSH public key
@@ -35,10 +48,39 @@ TODO: intro
         state: present
         key: "{{ hostvars['head']['public_ssh_key'] }}"
 ----
+<1> Первый play: на главном хосте создаём SSH-ключ и добавляем в `known_hosts` все дочерние хосты.
+<2> Генерируем ed25519 SSH-ключ.
+<3> Записываем публичную часть ключа в переменную.
+<4> Добавляем все дочерние хосты в `known_hosts`.
+<5> Второй play: на каждом дочернем хосте заносим главный хост в список авторизованных ключей.
 
-TODO: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/known_hosts_module.html
+.`add-known-host.yml`
+[source,yml]
+----
+- name: "Get key from host {{ cfg_node }}" <1>
+  command: "ssh-keyscan -t ecdsa {{ hostvars[ cfg_node ].ansible_host}} | grep -v ^#"
+  register: ecdsa_key
 
-TODO: explanation
+- name: Add key to known_hosts <2>
+  known_hosts:
+    name: "{{ hostvars[ cfg_node ].ansible_host }}"
+    path: /home/head-user/.ssh/known_hosts
+    key: "{{ ecdsa_key.stdout }}"
+----
+<1> Генерируем запись для `known_hosts`.
+<2> Заносим родительский хост в `known_hosts`.
 
-TODO: StrictHostKeyChecking=no
+== Примечания
+
+. Запись дочерних хостов вынесена в отдельный файл, т.к. в Ansible https://github.com/ansible/ansible/issues/13262#issuecomment-335904803[нельзя итерировать блок задач по списку переменных] (а у нас 2 задачи - генерация записи через `ssh-keyscan` и запись в `known_hosts`). Если дочерний хост только один, то можно объединить всё в один плейбук.
+. Для доступа к переменной `public_ssh_key` используется `hostvars['head']`, т.к. переменные хранятся на уровне хоста. Чтобы не привязываться к имени конкретного хоста, можно завести dummy-хост, в котором будут храниться общие переменные для всего плейбука. Например:
++
+[source,yml]
+----
+- name: Add dummy host with variable
+  ansible.builtin.add_host:
+    name: dummy-host
+    public_ssh_key: "{{ key_result.public_key }}"
+----
+. Можно не добавлять родительский хост в `known_hosts` дочерних, тогда нужно будет при работе по SSH использовать аттрибут `StrictHostKeyChecking=no`.
 
