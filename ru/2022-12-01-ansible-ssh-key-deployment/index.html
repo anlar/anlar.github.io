@@ -1,46 +1,46 @@
 <!doctype html><html class=no-js lang=ru><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta http-equiv=x-ua-compatible content="IE=edge"><title>Загрузка SSH-ключей с помощью Ansible - Блог AnLar</title><script>(function(e,t){e[t]=e[t].replace("no-js","js")})(document.documentElement,"className")</script><meta name=description content><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=dns-prefetch href=//fonts.googleapis.com><link rel=dns-prefetch href=//fonts.gstatic.com><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700"><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=/css/coderay.css><link rel="shortcut icon" href=/favicon.ico></head><body class=body><div class="container container--outer"><header class=header><div class="container header__container"><div class=logo><a class=logo__link href=/ru/ title="Блог AnLar" rel=home><div class="logo__item logo__text"><div class=logo__title>Блог AnLar</div></div></a></div><nav class=menu><button class=menu__btn aria-haspopup=true aria-expanded=false tabindex=0>
-<span class=menu__btn-title tabindex=-1>Меню</span></button><ul class=menu__list><li class=menu__item><a class=menu__link href=/ru><span class=menu__text>Блог</span></a></li><li class=menu__item><a class=menu__link href=/ru/post><span class=menu__text>Архив</span></a></li><li class=menu__item><a class=menu__link href=/ru/categories><span class=menu__text>Категории</span></a></li><li class=menu__item><a class=menu__link href=/ru/tags><span class=menu__text>Теги</span></a></li><li class=menu__item><a class=menu__link href=/ru/about><span class=menu__text>Обо мне</span></a></li></ul></nav></div></header><div class="wrapper flex"><div class=primary><main class=main role=main><article class=post><header class=post__header><h1 class=post__title>Загрузка SSH-ключей с помощью Ansible</h1><div class="post__meta meta"><div class="meta__item-datetime meta__item"><svg class="meta__icon icon icon-time" width="16" height="14" viewBox="0 0 30 28"><path d="M15 0C7 0 1 6 1 14s6 14 14 14 14-6 14-14S23 0 15 0zm0 25C9 25 4 20 4 14S9 3 15 3s11 5 11 11-5 11-11 11zm1-18h-2v8.4l6.8 4.4L22 18l-6-3.8V7z"/></svg><time class=meta__text datetime=2022-12-01T14:49:00+04:00>2022-12-01</time></div></div></header><div class="content post__content clearfix"><div class=paragraph><p>При развёртывании систем бывает нужно сгенерировать SSH-ключи, которые будут использовать удалённые серверы для доступа друг к другу. Например, родительский сервер <code>head</code> должен иметь доступ по SSH к нескольким дочерним серверам <code>node*</code>. Ниже приведён пример плейбука для Ansible, который добавляет на сервер <code>head</code> новый SSH-ключ и размещает его публичную часть на серверы <code>node*</code>. Т.е. после его выполнения родительский сервер будет иметь доступ по SSH к дочерним.</p></div><div class=paragraph><p>Плейбук является идемпотентным, т.е. при повторном выполнении он проверяет, что ключ уже сгенерирован и размещен на серверах. Но если ключ или запись в <code>known_hosts</code> будут удалены, то он их восстановит.</p></div><div class=listingblock><div class=title>Исходный код 1. Плейбук <code>deploy-ssh-key.yml</code></div><div class=content><pre class="CodeRay highlight"><code data-lang=yml>- name: Generate key on head host <b class=conum>(1)</b>
-  hosts: head
-  tasks:
-    - name: Generate SSH key <b class=conum>(2)</b>
-      community.crypto.openssh_keypair:
-        path: /home/head-user/.ssh/id_ed25519
-        type: ed25519
-        owner: head-user
-        group: head-user
-      register: key_result
+<span class=menu__btn-title tabindex=-1>Меню</span></button><ul class=menu__list><li class=menu__item><a class=menu__link href=/ru><span class=menu__text>Блог</span></a></li><li class=menu__item><a class=menu__link href=/ru/post><span class=menu__text>Архив</span></a></li><li class=menu__item><a class=menu__link href=/ru/categories><span class=menu__text>Категории</span></a></li><li class=menu__item><a class=menu__link href=/ru/tags><span class=menu__text>Теги</span></a></li><li class=menu__item><a class=menu__link href=/ru/about><span class=menu__text>Обо мне</span></a></li></ul></nav></div></header><div class="wrapper flex"><div class=primary><main class=main role=main><article class=post><header class=post__header><h1 class=post__title>Загрузка SSH-ключей с помощью Ansible</h1><div class="post__meta meta"><div class="meta__item-datetime meta__item"><svg class="meta__icon icon icon-time" width="16" height="14" viewBox="0 0 30 28"><path d="M15 0C7 0 1 6 1 14s6 14 14 14 14-6 14-14S23 0 15 0zm0 25C9 25 4 20 4 14S9 3 15 3s11 5 11 11-5 11-11 11zm1-18h-2v8.4l6.8 4.4L22 18l-6-3.8V7z"/></svg><time class=meta__text datetime=2022-12-01T14:49:00+04:00>2022-12-01</time></div></div></header><div class="content post__content clearfix"><div class=paragraph><p>При развёртывании систем бывает нужно сгенерировать SSH-ключи, которые будут использовать удалённые серверы для доступа друг к другу. Например, родительский сервер <code>head</code> должен иметь доступ по SSH к нескольким дочерним серверам <code>node*</code>. Ниже приведён пример плейбука для Ansible, который добавляет на сервер <code>head</code> новый SSH-ключ и размещает его публичную часть на серверы <code>node*</code>. Т.е. после его выполнения родительский сервер будет иметь доступ по SSH к дочерним.</p></div><div class=paragraph><p>Плейбук является идемпотентным, т.е. при повторном выполнении он проверяет, что ключ уже сгенерирован и размещен на серверах. Но если ключ или запись в <code>known_hosts</code> будут удалены, то он их восстановит.</p></div><div class=listingblock><div class=title>Исходный код 1. Плейбук <code>deploy-ssh-key.yml</code></div><div class=content><pre class="CodeRay highlight"><code data-lang=yml>- <span class=string><span class=content>name: Generate key on head host </span></span><b class=conum>(1)</b>
+  <span class=key>hosts</span>: <span class=string><span class=content>head</span></span>
+  <span class=key>tasks</span>:
+    - <span class=string><span class=content>name: Generate SSH key </span></span><b class=conum>(2)</b>
+      <span class=key>community.crypto.openssh_keypair</span>:
+        <span class=key>path</span>: <span class=string><span class=content>/home/head-user/.ssh/id_ed25519</span></span>
+        <span class=key>type</span>: <span class=string><span class=content>ed25519</span></span>
+        <span class=key>owner</span>: <span class=string><span class=content>head-user</span></span>
+        <span class=key>group</span>: <span class=string><span class=content>head-user</span></span>
+      <span class=key>register</span>: <span class=string><span class=content>key_result</span></span>
 
-    - name: Set public SSH key variable <b class=conum>(3)</b>
-      ansible.builtin.set_fact:
-        public_ssh_key: &#34;{{ key_result.public_key }}&#34;
+    - <span class=string><span class=content>name: Set public SSH key variable </span></span><b class=conum>(3)</b>
+      <span class=key>ansible.builtin.set_fact</span>:
+        <span class=key>public_ssh_key</span>: <span class=string><span class=delimiter>&#34;</span><span class=content>{{ key_result.public_key }}</span><span class=delimiter>&#34;</span></span>
 
-    - name: Add host to known_hosts <b class=conum>(4)</b>
-      include_tasks:
-        file: add-known-host.yml
-      vars:
-        cfg_node: &#34;{{ item }}&#34;
-      loop:
-        - node1
-        - node2
-        - node3
+    - <span class=string><span class=content>name: Add host to known_hosts </span></span><b class=conum>(4)</b>
+      <span class=key>include_tasks</span>:
+        <span class=key>file</span>: <span class=string><span class=content>add-known-host.yml</span></span>
+      <span class=key>vars</span>:
+        <span class=key>cfg_node</span>: <span class=string><span class=delimiter>&#34;</span><span class=content>{{ item }}</span><span class=delimiter>&#34;</span></span>
+      <span class=key>loop</span>:
+        - <span class=string><span class=content>node1</span></span>
+        - <span class=string><span class=content>node2</span></span>
+        - <span class=string><span class=content>node3</span></span>
 
-- name: Copy generated SSH public key to nodes <b class=conum>(5)</b>
-  hosts: node1,node2,node3
-  tasks:
-    - name: Copy SSH public key
-      ansible.posix.authorized_key:
-        user: node-user
-        state: present
-        key: &#34;{{ hostvars[&#39;head&#39;][&#39;public_ssh_key&#39;] }}&#34;</code></pre></div></div><div class="colist arabic"><ol><li><p>Первый play: на главном хосте создаём SSH-ключ и добавляем в <code>known_hosts</code> все дочерние хосты.</p></li><li><p>Генерируем ed25519 SSH-ключ.</p></li><li><p>Записываем публичную часть ключа в переменную.</p></li><li><p>Добавляем все дочерние хосты в <code>known_hosts</code>.</p></li><li><p>Второй play: на каждом дочернем хосте заносим главный хост в список авторизованных ключей.</p></li></ol></div><div class=listingblock><div class=title>Исходный код 2. Файл <code>add-known-host.yml</code></div><div class=content><pre class="CodeRay highlight"><code data-lang=yml>- name: &#34;Get key from host {{ cfg_node }}&#34; <b class=conum>(1)</b>
-  command: &#34;ssh-keyscan -t ecdsa {{ hostvars[ cfg_node ].ansible_host}} | grep -v ^#&#34;
-  register: ecdsa_key
+- <span class=string><span class=content>name: Copy generated SSH public key to nodes </span></span><b class=conum>(5)</b>
+  <span class=key>hosts</span>: <span class=string><span class=content>node1,node2,node3</span></span>
+  <span class=key>tasks</span>:
+    - <span class=string><span class=content>name: Copy SSH public key</span></span>
+      <span class=key>ansible.posix.authorized_key</span>:
+        <span class=key>user</span>: <span class=string><span class=content>node-user</span></span>
+        <span class=key>state</span>: <span class=string><span class=content>present</span></span>
+        <span class=key>key</span>: <span class=string><span class=delimiter>&#34;</span><span class=content>{{ hostvars[&#39;head&#39;][&#39;public_ssh_key&#39;] }}</span><span class=delimiter>&#34;</span></span></code></pre></div></div><div class="colist arabic"><ol><li><p>Первый play: на главном хосте создаём SSH-ключ и добавляем в <code>known_hosts</code> все дочерние хосты.</p></li><li><p>Генерируем ed25519 SSH-ключ.</p></li><li><p>Записываем публичную часть ключа в переменную.</p></li><li><p>Добавляем все дочерние хосты в <code>known_hosts</code>.</p></li><li><p>Второй play: на каждом дочернем хосте заносим главный хост в список авторизованных ключей.</p></li></ol></div><div class=listingblock><div class=title>Исходный код 2. Файл <code>add-known-host.yml</code></div><div class=content><pre class="CodeRay highlight"><code data-lang=yml>- <span class=string><span class=content>name: &#34;Get key from host {{ cfg_node }}&#34; </span></span><b class=conum>(1)</b>
+  <span class=key>command</span>: <span class=string><span class=delimiter>&#34;</span><span class=content>ssh-keyscan -t ecdsa {{ hostvars[ cfg_node ].ansible_host}} | grep -v ^#</span><span class=delimiter>&#34;</span></span>
+  <span class=key>register</span>: <span class=string><span class=content>ecdsa_key</span></span>
 
-- name: Add key to known_hosts <b class=conum>(2)</b>
-  known_hosts:
-    name: &#34;{{ hostvars[ cfg_node ].ansible_host }}&#34;
-    path: /home/head-user/.ssh/known_hosts
-    key: &#34;{{ ecdsa_key.stdout }}&#34;</code></pre></div></div><div class="colist arabic"><ol><li><p>Генерируем запись для <code>known_hosts</code>.</p></li><li><p>Заносим родительский хост в <code>known_hosts</code>.</p></li></ol></div><div class=sect1><h2 id=_примечания>Примечания</h2><div class=sectionbody><div class="olist arabic"><ol class=arabic><li><p>Запись дочерних хостов вынесена в отдельный файл, т.к. в Ansible <a href=https://github.com/ansible/ansible/issues/13262#issuecomment-335904803>нельзя итерировать блок задач по списку переменных</a> (а у нас 2 задачи - генерация записи через <code>ssh-keyscan</code> и запись в <code>known_hosts</code>). Если дочерний хост только один, то можно объединить всё в один плейбук.</p></li><li><p>Для доступа к переменной <code>public_ssh_key</code> используется <code>hostvars['head']</code>, т.к. переменные хранятся на уровне хоста. Чтобы не привязываться к имени конкретного хоста, можно завести dummy-хост, в котором будут храниться общие переменные для всего плейбука. Например:</p><div class=listingblock><div class=content><pre class="CodeRay highlight"><code data-lang=yml>- name: Add dummy host with variable
-  ansible.builtin.add_host:
-    name: dummy-host
-    public_ssh_key: &#34;{{ key_result.public_key }}&#34;</code></pre></div></div></li><li><p>Можно не добавлять родительский хост в <code>known_hosts</code> дочерних, тогда нужно будет при работе по SSH использовать аттрибут <code>StrictHostKeyChecking=no</code>.</p></li></ol></div></div></div></div><footer class=post__footer><div class="post__tags tags clearfix"><svg class="tags__badge icon icon-tag" width="16" height="16" viewBox="0 0 32 32"><path d="M32 19c0 1-1 2-1 2L21 31s-1 1-2 1-2-1-2-1L2 16c-1-1-1.4-2-1.4-2S0 12.5.0 11V3C0 1.5.8.8.8.8S1.5.0 3 0h8c1.5.0 3 .6 3 .6S15 1 16 2l15 15s1 1 1 2zM7 10a3 3 0 100-6 3 3 0 000 6z"/></svg><ul class=tags__list><li class=tags__item><a class="tags__link btn" href=/ru/tags/ansible/ rel=tag>ansible</a></li><li class=tags__item><a class="tags__link btn" href=/ru/tags/ssh/ rel=tag>ssh</a></li></ul></div></footer></article></main></div></div><footer class=footer><div class="container footer__container flex"><div class=footer__copyright>&copy; 2022 Блог AnLar.
+- <span class=string><span class=content>name: Add key to known_hosts </span></span><b class=conum>(2)</b>
+  <span class=key>known_hosts</span>:
+    <span class=key>name</span>: <span class=string><span class=delimiter>&#34;</span><span class=content>{{ hostvars[ cfg_node ].ansible_host }}</span><span class=delimiter>&#34;</span></span>
+    <span class=key>path</span>: <span class=string><span class=content>/home/head-user/.ssh/known_hosts</span></span>
+    <span class=key>key</span>: <span class=string><span class=delimiter>&#34;</span><span class=content>{{ ecdsa_key.stdout }}</span><span class=delimiter>&#34;</span></span></code></pre></div></div><div class="colist arabic"><ol><li><p>Генерируем запись для <code>known_hosts</code>.</p></li><li><p>Заносим родительский хост в <code>known_hosts</code>.</p></li></ol></div><div class=sect1><h2 id=_примечания>Примечания</h2><div class=sectionbody><div class="olist arabic"><ol class=arabic><li><p>Запись дочерних хостов вынесена в отдельный файл, т.к. в Ansible <a href=https://github.com/ansible/ansible/issues/13262#issuecomment-335904803>нельзя итерировать блок задач по списку переменных</a> (а у нас 2 задачи - генерация записи через <code>ssh-keyscan</code> и запись в <code>known_hosts</code>). Если дочерний хост только один, то можно объединить всё в один плейбук.</p></li><li><p>Для доступа к переменной <code>public_ssh_key</code> используется <code>hostvars['head']</code>, т.к. переменные хранятся на уровне хоста. Чтобы не привязываться к имени конкретного хоста, можно завести dummy-хост, в котором будут храниться общие переменные для всего плейбука. Например:</p><div class=listingblock><div class=content><pre class="CodeRay highlight"><code data-lang=yml>- <span class=string><span class=content>name: Add dummy host with variable</span></span>
+  <span class=key>ansible.builtin.add_host</span>:
+    <span class=key>name</span>: <span class=string><span class=content>dummy-host</span></span>
+    <span class=key>public_ssh_key</span>: <span class=string><span class=delimiter>&#34;</span><span class=content>{{ key_result.public_key }}</span><span class=delimiter>&#34;</span></span></code></pre></div></div></li><li><p>Можно не добавлять родительский хост в <code>known_hosts</code> дочерних, тогда нужно будет при работе по SSH использовать аттрибут <code>StrictHostKeyChecking=no</code>.</p></li></ol></div></div></div></div><footer class=post__footer><div class="post__tags tags clearfix"><svg class="tags__badge icon icon-tag" width="16" height="16" viewBox="0 0 32 32"><path d="M32 19c0 1-1 2-1 2L21 31s-1 1-2 1-2-1-2-1L2 16c-1-1-1.4-2-1.4-2S0 12.5.0 11V3C0 1.5.8.8.8.8S1.5.0 3 0h8c1.5.0 3 .6 3 .6S15 1 16 2l15 15s1 1 1 2zM7 10a3 3 0 100-6 3 3 0 000 6z"/></svg><ul class=tags__list><li class=tags__item><a class="tags__link btn" href=/ru/tags/ansible/ rel=tag>ansible</a></li><li class=tags__item><a class="tags__link btn" href=/ru/tags/ssh/ rel=tag>ssh</a></li></ul></div></footer></article></main></div></div><footer class=footer><div class="container footer__container flex"><div class=footer__copyright>&copy; 2022 Блог AnLar.
 <span class=footer__copyright-credits>Сгенерировано с использованием <a href=https://gohugo.io/ rel="nofollow noopener" target=_blank>Hugo</a> и темы <a href=https://github.com/Vimux/Mainroad/ rel="nofollow noopener" target=_blank>Mainroad</a>.</span></div></div></footer></div><script async defer src=/js/menu.js></script></body></html>
