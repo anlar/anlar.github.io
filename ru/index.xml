@@ -1,3 +1,109 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Блог AnLar</title><link>/ru/</link><description>Recent content on Блог AnLar</description><generator>Hugo -- gohugo.io</generator><language>ru</language><lastBuildDate>Fri, 02 Dec 2022 00:00:00 +0400</lastBuildDate><atom:link href="/ru/index.xml" rel="self" type="application/rss+xml"/><item><title>Загрузка SSH-ключей с помощью Ansible</title><link>/ru/2022-12-02-ansible-ssh-key-deployment/</link><pubDate>Fri, 02 Dec 2022 00:00:00 +0400</pubDate><guid>/ru/2022-12-02-ansible-ssh-key-deployment/</guid><description>&lt;div class="paragraph">
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Блог AnLar</title><link>https://anlar.github.io/ru/</link><description>Recent content on Блог AnLar</description><generator>Hugo -- gohugo.io</generator><language>ru</language><lastBuildDate>Fri, 02 Dec 2022 00:00:00 +0400</lastBuildDate><atom:link href="https://anlar.github.io/ru/index.xml" rel="self" type="application/rss+xml"/><item><title>Загрузка SSH-ключей с помощью Ansible</title><link>https://anlar.github.io/ru/2022-12-02-ansible-ssh-key-deployment/</link><pubDate>Fri, 02 Dec 2022 00:00:00 +0400</pubDate><guid>https://anlar.github.io/ru/2022-12-02-ansible-ssh-key-deployment/</guid><description>&lt;div class="paragraph">
 &lt;p>При развёртывании систем бывает нужно сгенерировать SSH-ключи, которые будут использовать удалённые серверы для доступа друг к другу. Например, родительский сервер &lt;code>head&lt;/code> должен иметь доступ по SSH к нескольким дочерним серверам &lt;code>node*&lt;/code>. Ниже приведён пример плейбука для Ansible, который добавляет на сервер &lt;code>head&lt;/code> новый SSH-ключ и размещает его публичную часть на серверы &lt;code>node*&lt;/code>. Т.е. после его выполнения родительский сервер будет иметь доступ по SSH к дочерним.&lt;/p>
-&lt;/div></description></item><item><title>Антон Ларионов</title><link>/ru/about/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/ru/about/</guid><description>Системный архитектор, разработчик ПО.</description></item></channel></rss>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>Плейбук является идемпотентным, т.е. при повторном выполнении он проверяет, что ключ уже сгенерирован и размещен на серверах. Но если ключ или запись в &lt;code>known_hosts&lt;/code> будут удалены, то он их восстановит.&lt;/p>
+&lt;/div>
+&lt;div class="listingblock">
+&lt;div class="title">Исходный код 1. Плейбук &lt;code>deploy-ssh-key.yml&lt;/code>&lt;/div>
+&lt;div class="content">
+&lt;pre class="CodeRay highlight">&lt;code data-lang="yml">- &lt;span class="string">&lt;span class="content">name: Generate key on head host &lt;/span>&lt;/span>&lt;b class="conum">(1)&lt;/b>
+&lt;span class="key">hosts&lt;/span>: &lt;span class="string">&lt;span class="content">head&lt;/span>&lt;/span>
+&lt;span class="key">tasks&lt;/span>:
+- &lt;span class="string">&lt;span class="content">name: Generate SSH key &lt;/span>&lt;/span>&lt;b class="conum">(2)&lt;/b>
+&lt;span class="key">community.crypto.openssh_keypair&lt;/span>:
+&lt;span class="key">path&lt;/span>: &lt;span class="string">&lt;span class="content">/home/head-user/.ssh/id_ed25519&lt;/span>&lt;/span>
+&lt;span class="key">type&lt;/span>: &lt;span class="string">&lt;span class="content">ed25519&lt;/span>&lt;/span>
+&lt;span class="key">owner&lt;/span>: &lt;span class="string">&lt;span class="content">head-user&lt;/span>&lt;/span>
+&lt;span class="key">group&lt;/span>: &lt;span class="string">&lt;span class="content">head-user&lt;/span>&lt;/span>
+&lt;span class="key">register&lt;/span>: &lt;span class="string">&lt;span class="content">key_result&lt;/span>&lt;/span>
+- &lt;span class="string">&lt;span class="content">name: Set public SSH key variable &lt;/span>&lt;/span>&lt;b class="conum">(3)&lt;/b>
+&lt;span class="key">ansible.builtin.set_fact&lt;/span>:
+&lt;span class="key">public_ssh_key&lt;/span>: &lt;span class="string">&lt;span class="delimiter">&amp;#34;&lt;/span>&lt;span class="content">{{ key_result.public_key }}&lt;/span>&lt;span class="delimiter">&amp;#34;&lt;/span>&lt;/span>
+- &lt;span class="string">&lt;span class="content">name: Add host to known_hosts &lt;/span>&lt;/span>&lt;b class="conum">(4)&lt;/b>
+&lt;span class="key">include_tasks&lt;/span>:
+&lt;span class="key">file&lt;/span>: &lt;span class="string">&lt;span class="content">add-known-host.yml&lt;/span>&lt;/span>
+&lt;span class="key">vars&lt;/span>:
+&lt;span class="key">cfg_node&lt;/span>: &lt;span class="string">&lt;span class="delimiter">&amp;#34;&lt;/span>&lt;span class="content">{{ item }}&lt;/span>&lt;span class="delimiter">&amp;#34;&lt;/span>&lt;/span>
+&lt;span class="key">loop&lt;/span>:
+- &lt;span class="string">&lt;span class="content">node1&lt;/span>&lt;/span>
+- &lt;span class="string">&lt;span class="content">node2&lt;/span>&lt;/span>
+- &lt;span class="string">&lt;span class="content">node3&lt;/span>&lt;/span>
+- &lt;span class="string">&lt;span class="content">name: Copy generated SSH public key to nodes &lt;/span>&lt;/span>&lt;b class="conum">(5)&lt;/b>
+&lt;span class="key">hosts&lt;/span>: &lt;span class="string">&lt;span class="content">node1,node2,node3&lt;/span>&lt;/span>
+&lt;span class="key">tasks&lt;/span>:
+- &lt;span class="string">&lt;span class="content">name: Copy SSH public key&lt;/span>&lt;/span>
+&lt;span class="key">ansible.posix.authorized_key&lt;/span>:
+&lt;span class="key">user&lt;/span>: &lt;span class="string">&lt;span class="content">node-user&lt;/span>&lt;/span>
+&lt;span class="key">state&lt;/span>: &lt;span class="string">&lt;span class="content">present&lt;/span>&lt;/span>
+&lt;span class="key">key&lt;/span>: &lt;span class="string">&lt;span class="delimiter">&amp;#34;&lt;/span>&lt;span class="content">{{ hostvars[&amp;#39;head&amp;#39;][&amp;#39;public_ssh_key&amp;#39;] }}&lt;/span>&lt;span class="delimiter">&amp;#34;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;div class="colist arabic">
+&lt;ol>
+&lt;li>
+&lt;p>Первый play: на главном хосте создаём SSH-ключ и добавляем в &lt;code>known_hosts&lt;/code> все дочерние хосты.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Генерируем ed25519 SSH-ключ.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Записываем публичную часть ключа в переменную.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Добавляем все дочерние хосты в &lt;code>known_hosts&lt;/code>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Второй play: на каждом дочернем хосте заносим главный хост в список авторизованных ключей.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;/div>
+&lt;div class="listingblock">
+&lt;div class="title">Исходный код 2. Файл &lt;code>add-known-host.yml&lt;/code>&lt;/div>
+&lt;div class="content">
+&lt;pre class="CodeRay highlight">&lt;code data-lang="yml">- &lt;span class="string">&lt;span class="content">name: &amp;#34;Get key from host {{ cfg_node }}&amp;#34; &lt;/span>&lt;/span>&lt;b class="conum">(1)&lt;/b>
+&lt;span class="key">command&lt;/span>: &lt;span class="string">&lt;span class="delimiter">&amp;#34;&lt;/span>&lt;span class="content">ssh-keyscan -t ecdsa {{ hostvars[ cfg_node ].ansible_host}} | grep -v ^#&lt;/span>&lt;span class="delimiter">&amp;#34;&lt;/span>&lt;/span>
+&lt;span class="key">register&lt;/span>: &lt;span class="string">&lt;span class="content">ecdsa_key&lt;/span>&lt;/span>
+- &lt;span class="string">&lt;span class="content">name: Add key to known_hosts &lt;/span>&lt;/span>&lt;b class="conum">(2)&lt;/b>
+&lt;span class="key">known_hosts&lt;/span>:
+&lt;span class="key">name&lt;/span>: &lt;span class="string">&lt;span class="delimiter">&amp;#34;&lt;/span>&lt;span class="content">{{ hostvars[ cfg_node ].ansible_host }}&lt;/span>&lt;span class="delimiter">&amp;#34;&lt;/span>&lt;/span>
+&lt;span class="key">path&lt;/span>: &lt;span class="string">&lt;span class="content">/home/head-user/.ssh/known_hosts&lt;/span>&lt;/span>
+&lt;span class="key">key&lt;/span>: &lt;span class="string">&lt;span class="delimiter">&amp;#34;&lt;/span>&lt;span class="content">{{ ecdsa_key.stdout }}&lt;/span>&lt;span class="delimiter">&amp;#34;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;div class="colist arabic">
+&lt;ol>
+&lt;li>
+&lt;p>Генерируем запись для &lt;code>known_hosts&lt;/code>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Заносим родительский хост в &lt;code>known_hosts&lt;/code>.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;/div>
+&lt;div class="sect1">
+&lt;h2 id="_примечания">Примечания&lt;/h2>
+&lt;div class="sectionbody">
+&lt;div class="olist arabic">
+&lt;ol class="arabic">
+&lt;li>
+&lt;p>Запись дочерних хостов вынесена в отдельный файл, т.к. в Ansible &lt;a href="https://github.com/ansible/ansible/issues/13262#issuecomment-335904803">нельзя создавать цикл по нескольким переменным для блоков&lt;/a> (а у нас 2 задачи - генерация записи через &lt;code>ssh-keyscan&lt;/code> и запись в &lt;code>known_hosts&lt;/code>). Если дочерний хост только один, то можно объединить всё в один плейбук.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Для доступа к переменной &lt;code>public_ssh_key&lt;/code> используется &lt;code>hostvars[&amp;#39;head&amp;#39;]&lt;/code>, т.к. переменные хранятся на уровне хоста. Чтобы не привязываться к имени конкретного хоста, можно завести dummy-хост, в котором будут храниться общие переменные для всего плейбука. Например:&lt;/p>
+&lt;div class="listingblock">
+&lt;div class="content">
+&lt;pre class="CodeRay highlight">&lt;code data-lang="yml">- &lt;span class="string">&lt;span class="content">name: Add dummy host with variable&lt;/span>&lt;/span>
+&lt;span class="key">ansible.builtin.add_host&lt;/span>:
+&lt;span class="key">name&lt;/span>: &lt;span class="string">&lt;span class="content">dummy-host&lt;/span>&lt;/span>
+&lt;span class="key">public_ssh_key&lt;/span>: &lt;span class="string">&lt;span class="delimiter">&amp;#34;&lt;/span>&lt;span class="content">{{ key_result.public_key }}&lt;/span>&lt;span class="delimiter">&amp;#34;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;/li>
+&lt;li>
+&lt;p>Можно не добавлять родительский хост в &lt;code>known_hosts&lt;/code> дочерних, тогда нужно будет при работе по SSH использовать аттрибут &lt;code>StrictHostKeyChecking=no&lt;/code>.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;/div>
+&lt;/div>
+&lt;/div></description></item></channel></rss>
