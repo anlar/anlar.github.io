@@ -101,7 +101,7 @@
 &lt;/div>
 &lt;/li>
 &lt;li>
-&lt;p>Можно не добавлять родительский хост в &lt;code>known_hosts&lt;/code> дочерних, тогда нужно будет при работе по SSH использовать аттрибут &lt;code>StrictHostKeyChecking=no&lt;/code>.&lt;/p>
+&lt;p>Можно не добавлять родительский хост в &lt;code>known_hosts&lt;/code> дочерних, тогда нужно будет при работе по SSH использовать атрибут &lt;code>StrictHostKeyChecking=no&lt;/code>.&lt;/p>
 &lt;/li>
 &lt;/ol>
 &lt;/div>
