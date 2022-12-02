@@ -84,5 +84,5 @@ tags:
     name: dummy-host
     public_ssh_key: "{{ key_result.public_key }}"
 ----
-. Можно не добавлять родительский хост в `known_hosts` дочерних, тогда нужно будет при работе по SSH использовать аттрибут `StrictHostKeyChecking=no`.
+. Можно не добавлять родительский хост в `known_hosts` дочерних, тогда нужно будет при работе по SSH использовать атрибут `StrictHostKeyChecking=no`.
 
