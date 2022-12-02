@@ -1,6 +1,6 @@
 # MAIN
 
-baseURL = '/'
+baseURL = 'https://anlar.github.io/'
 languageCode = 'ru'
 title = 'AnLar'
 
