@@ -2,6 +2,7 @@
 *.swp
 
 .hugo_build.lock
+public
 resources
 themes
 
