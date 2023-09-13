@@ -1,4 +1,211 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Блог AnLar</title><link>https://anlar.github.io/ru/</link><description>Recent content on Блог AnLar</description><generator>Hugo -- gohugo.io</generator><language>ru</language><lastBuildDate>Fri, 02 Dec 2022 00:00:00 +0400</lastBuildDate><atom:link href="https://anlar.github.io/ru/index.xml" rel="self" type="application/rss+xml"/><item><title>Загрузка SSH-ключей с помощью Ansible</title><link>https://anlar.github.io/ru/2022-12-02-ansible-ssh-key-deployment/</link><pubDate>Fri, 02 Dec 2022 00:00:00 +0400</pubDate><guid>https://anlar.github.io/ru/2022-12-02-ansible-ssh-key-deployment/</guid><description>&lt;div class="paragraph">
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Блог AnLar</title><link>https://anlar.github.io/ru/</link><description>Recent content on Блог AnLar</description><generator>Hugo -- gohugo.io</generator><language>ru</language><lastBuildDate>Wed, 13 Sep 2023 00:00:00 +0400</lastBuildDate><atom:link href="https://anlar.github.io/ru/index.xml" rel="self" type="application/rss+xml"/><item><title>Создание и публикация пакета в PyPI</title><link>https://anlar.github.io/ru/2023-09-13-python-package/</link><pubDate>Wed, 13 Sep 2023 00:00:00 +0400</pubDate><guid>https://anlar.github.io/ru/2023-09-13-python-package/</guid><description>&lt;div class="paragraph">
+&lt;p>В экосистеме Python существует много систем для сборки и публикации пакетов. Здесь описывается самый простой и, насколько это возможно, &amp;#34;официальный и современный&amp;#34; на данный момент способ. Для примера используется консольное приложение на Python, которое можно будет как запускать из командной строки, так и использовать как библиотеку в других приложениях.&lt;/p>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>Примером пакета, собранного этим способом, является &lt;code>todoist-to-todotxt&lt;/code>:&lt;/p>
+&lt;/div>
+&lt;div class="ulist">
+&lt;ul>
+&lt;li>
+&lt;p>&lt;a href="https://github.com/anlar/todoist-to-todotxt">Репозиторий проекта&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;a href="https://pypi.org/project/todoist-to-todotxt/">Страница в PyPI&lt;/a>&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;/div>
+&lt;div class="sect1">
+&lt;h2 id="_подготовка">Подготовка&lt;/h2>
+&lt;div class="sectionbody">
+&lt;div class="paragraph">
+&lt;p>Сборка будет проходить в Ubuntu. Для работы понадобится Python 3, pip (пакетный менеджер) и virtualenv (для изолированной сборки пакета):&lt;/p>
+&lt;/div>
+&lt;div class="literalblock">
+&lt;div class="content">
+&lt;pre># apt install python3-pip python3-venv&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>Также нужна система для сборки проектов Python:&lt;/p>
+&lt;/div>
+&lt;div class="literalblock">
+&lt;div class="content">
+&lt;pre>$ pip install --upgrade build&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>И утилита для загрузки пакетов в PyPI:&lt;/p>
+&lt;/div>
+&lt;div class="literalblock">
+&lt;div class="content">
+&lt;pre>$ pip install --upgrade twine&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;/div>
+&lt;/div>
+&lt;div class="sect1">
+&lt;h2 id="_структура_проекта">Структура проекта&lt;/h2>
+&lt;div class="sectionbody">
+&lt;div class="paragraph">
+&lt;p>Будем создавать проект с названием &lt;code>project-a&lt;/code>. Для этого нужна следующая структура файлов:&lt;/p>
+&lt;/div>
+&lt;div class="listingblock">
+&lt;div class="title">Исходный код 1. Директория проекта&lt;/div>
+&lt;div class="content">
+&lt;pre class="CodeRay highlight">&lt;code>package-a/
+├── src &lt;b class="conum">(1)&lt;/b>
+│   └── package_a
+│   ├── __init__.py &lt;b class="conum">(2)&lt;/b>
+│   └── main.py &lt;b class="conum">(3)&lt;/b>
+├── README.md &lt;b class="conum">(4)&lt;/b>
+├── LICENSE.txt &lt;b class="conum">(5)&lt;/b>
+└── pyproject.toml &lt;b class="conum">(6)&lt;/b>&lt;/code>&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;div class="colist arabic">
+&lt;ol>
+&lt;li>
+&lt;p>Директория с исходным кодом проекта.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Пустой файл &lt;code>__init__.py&lt;/code> для обозначения пакета.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Главный файл с кодом.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Файл с описанием проекта.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Лицензия проекта (выбираем лицензию и копируем текст отсюда: &lt;a href="https://choosealicense.com/" class="bare">https://choosealicense.com/&lt;/a>).&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Файл с описание пакета (необходим для сборки).&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>Добавим простой код в &lt;code>main.py&lt;/code>, который выводит название проекта:&lt;/p>
+&lt;/div>
+&lt;div class="listingblock">
+&lt;div class="title">Исходный код 2. main.py&lt;/div>
+&lt;div class="content">
+&lt;pre class="CodeRay highlight">&lt;code data-lang="python">&lt;span class="comment">#!/usr/bin/env python3&lt;/span>
+&lt;span class="keyword">def&lt;/span> &lt;span class="function">cli&lt;/span>():
+print(&lt;span class="string">&lt;span class="delimiter">&amp;#34;&lt;/span>&lt;span class="content">Project A&lt;/span>&lt;span class="delimiter">&amp;#34;&lt;/span>&lt;/span>)
+&lt;span class="keyword">if&lt;/span> __name__ == &lt;span class="string">&lt;span class="delimiter">&amp;#34;&lt;/span>&lt;span class="content">__main__&lt;/span>&lt;span class="delimiter">&amp;#34;&lt;/span>&lt;/span>:
+cli()&lt;/code>&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>Для описания сборки используется файл &lt;code>pyproject.toml&lt;/code>, который является &amp;#34;фронтендом&amp;#34; для разных систем сборки (в данном примере используется &lt;code>setuptools&lt;/code>).&lt;/p>
+&lt;/div>
+&lt;div class="listingblock toml">
+&lt;div class="title">Исходный код 3. pyproject.toml&lt;/div>
+&lt;div class="content">
+&lt;pre class="CodeRay highlight">&lt;code>[build-system] &lt;b class="conum">(1)&lt;/b>
+requires = [&amp;#34;setuptools&amp;gt;=61.0&amp;#34;]
+build-backend = &amp;#34;setuptools.build_meta&amp;#34;
+[project] &lt;b class="conum">(2)&lt;/b>
+name = &amp;#34;package-a&amp;#34;
+version = &amp;#34;0.0.1&amp;#34;
+authors = [
+{ name=&amp;#34;Developer Name&amp;#34;, email=&amp;#34;developer-email@test.com&amp;#34; },
+]
+description = &amp;#34;Dummy package A&amp;#34;
+readme = &amp;#34;README.md&amp;#34;
+license = { file = &amp;#34;LICENSE.txt&amp;#34; }
+requires-python = &amp;#34;&amp;gt;=3.7&amp;#34;
+classifiers = [
+&amp;#34;Programming Language :: Python :: 3&amp;#34;,
+&amp;#34;License :: OSI Approved :: MIT License&amp;#34;,
+&amp;#34;Operating System :: OS Independent&amp;#34;,
+]
+keywords = [&amp;#34;dummy&amp;#34;, &amp;#34;test&amp;#34;]
+[project.scripts] &lt;b class="conum">(3)&lt;/b>
+package-a = &amp;#34;package_a.main:cli&amp;#34;
+[project.urls]
+&amp;#34;Homepage&amp;#34; = &amp;#34;https://github.com/anlar/package-a&amp;#34;
+&amp;#34;Repository&amp;#34; = &amp;#34;https://github.com/anlar/package-a&amp;#34;
+&amp;#34;Bug Tracker&amp;#34; = &amp;#34;https://github.com/anlar/package-a/issues&amp;#34;&lt;/code>&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;div class="colist arabic">
+&lt;ol>
+&lt;li>
+&lt;p>Описание выбранной системы сборки для пакета.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Мета-информация о пакете.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Название исполняемого файла, который будет создан для запуска скрипта.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;/div>
+&lt;/div>
+&lt;/div>
+&lt;div class="sect1">
+&lt;h2 id="_сборка">Сборка&lt;/h2>
+&lt;div class="sectionbody">
+&lt;div class="paragraph">
+&lt;p>Запускаем сборку пакета из директории &lt;code>package-a&lt;/code>:&lt;/p>
+&lt;/div>
+&lt;div class="literalblock">
+&lt;div class="content">
+&lt;pre>$ python -m build&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>В результате получим собранный пакет в директории &lt;code>dist&lt;/code>:&lt;/p>
+&lt;/div>
+&lt;div class="literalblock">
+&lt;div class="content">
+&lt;pre>package_a-0.0.1-py3-none-any.whl
+package-a-0.0.1.tar.gz&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;/div>
+&lt;/div>
+&lt;div class="sect1">
+&lt;h2 id="_публикация_пакета">Публикация пакета&lt;/h2>
+&lt;div class="sectionbody">
+&lt;div class="paragraph">
+&lt;p>Для публикации сначала можно использовать тестовый репозиторий PyPI - &lt;a href="https://test.pypi.org/">TestPyPI&lt;/a>. После того, как загрузка и установка пакета будут протестированы, по аналогичной схеме можно загружать пакет в PyPI.&lt;/p>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>Регистрируемся в TestPyPI, подключаем двухфакторную аутентификацию (без неё не будет работать загрузка пакетов) и создаём API token: &lt;a href="https://test.pypi.org/manage/account/#api-tokens" class="bare">https://test.pypi.org/manage/account/#api-tokens&lt;/a>.&lt;/p>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>Теперь можно загрузить собранный пакет:&lt;/p>
+&lt;/div>
+&lt;div class="literalblock">
+&lt;div class="content">
+&lt;pre>$ python -m twine upload --repository testpypi dist/*&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>Потребуется ввести имя - используется &lt;code>__token__&lt;/code>, и пароль - созданный API token.&lt;/p>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>После успешной загрузки можно установить загруженный пакет из репозитория:&lt;/p>
+&lt;/div>
+&lt;div class="literalblock">
+&lt;div class="content">
+&lt;pre>$ pip install -i https://test.pypi.org/simple/ package-a&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>Далее, после завершения тестирования в TestPyPI, нужно зарегистрироваться в основном репозитории PyPI (и получить новый API token) и использовать аналогичные команды для загрузки и установки пакета:&lt;/p>
+&lt;/div>
+&lt;div class="literalblock">
+&lt;div class="content">
+&lt;pre>$ python -m twine upload dist/*
+$ pip install package-a&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;/div>
+&lt;/div></description></item><item><title>Загрузка SSH-ключей с помощью Ansible</title><link>https://anlar.github.io/ru/2022-12-02-ansible-ssh-key-deployment/</link><pubDate>Fri, 02 Dec 2022 00:00:00 +0400</pubDate><guid>https://anlar.github.io/ru/2022-12-02-ansible-ssh-key-deployment/</guid><description>&lt;div class="paragraph">
 &lt;p>При развёртывании систем бывает нужно сгенерировать SSH-ключи, которые будут использовать удалённые серверы для доступа друг к другу. Например, родительский сервер &lt;code>head&lt;/code> должен иметь доступ по SSH к нескольким дочерним серверам &lt;code>node*&lt;/code>. Ниже приведён пример плейбука для Ansible, который добавляет на сервер &lt;code>head&lt;/code> новый SSH-ключ и размещает его публичную часть на серверы &lt;code>node*&lt;/code>. Т.е. после его выполнения родительский сервер будет иметь доступ по SSH к дочерним.&lt;/p>
 &lt;/div>
 &lt;div class="paragraph">
