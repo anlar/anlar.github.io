@@ -1,4 +1,124 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Блог AnLar</title><link>https://anlar.github.io/ru/</link><description>Recent content on Блог AnLar</description><generator>Hugo -- gohugo.io</generator><language>ru</language><lastBuildDate>Wed, 13 Sep 2023 00:00:00 +0400</lastBuildDate><atom:link href="https://anlar.github.io/ru/index.xml" rel="self" type="application/rss+xml"/><item><title>Создание и публикация пакета в PyPI</title><link>https://anlar.github.io/ru/2023-09-13-python-package/</link><pubDate>Wed, 13 Sep 2023 00:00:00 +0400</pubDate><guid>https://anlar.github.io/ru/2023-09-13-python-package/</guid><description>&lt;div class="paragraph">
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Блог AnLar</title><link>https://anlar.github.io/ru/</link><description>Recent content on Блог AnLar</description><generator>Hugo -- gohugo.io</generator><language>ru</language><lastBuildDate>Fri, 22 Sep 2023 00:00:00 +0400</lastBuildDate><atom:link href="https://anlar.github.io/ru/index.xml" rel="self" type="application/rss+xml"/><item><title>Переключение профилей мониторов с помощью autorandr и Rofi</title><link>https://anlar.github.io/ru/2023-09-22-autorandr-rofi/</link><pubDate>Fri, 22 Sep 2023 00:00:00 +0400</pubDate><guid>https://anlar.github.io/ru/2023-09-22-autorandr-rofi/</guid><description>&lt;div class="paragraph">
+&lt;p>При работе (особенно если у тебя ноутбук и ты им пользуешься в разных локациях) бывает нужно переключаться между разными конфигурациями мониторов.
+Сюда входит их разрешение, взаимное расположение и статус (вкл/выкл).
+Обычно система умеет самостоятельно изменять профиль отображения при подключении и отключении дисплеев, но часто это не соответствует тому, что хочется, и приходится вручную настраивать профиль через параметры мониторов в системе.
+Но можно упростить и автоматизировать этот процесс с помощью утилиты &lt;code>autorandr&lt;/code>, которая умеет запоминать и (автоматически) применять настройки мониторов.
+А с помощью Rofi можно создать удобное меню для ручного переключения между профилями.&lt;/p>
+&lt;/div>
+&lt;div class="sect1">
+&lt;h2 id="_autorandr">autorandr&lt;/h2>
+&lt;div class="sectionbody">
+&lt;div class="paragraph">
+&lt;p>&lt;a href="https://github.com/phillipberndt/autorandr">autorandr&lt;/a> — это удобная утилита, которая может сохранять информацию о конфигурации мониторов от &lt;code>xrandr&lt;/code> в отдельные профили и применять их (вручную, или автоматически определяя подходящий профиль).
+Для определения мониторов используется его идентификатор &lt;a href="https://en.wikipedia.org/wiki/Extended_Display_Identification_Data">EDID&lt;/a>, т.е. корректно определяются разные мониторы, даже если они подключаются к одному порту.&lt;/p>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>Устанавливаем &lt;code>autorandr&lt;/code> из репозитория (deb-based дистрибутив Linux):&lt;/p>
+&lt;/div>
+&lt;div class="literalblock">
+&lt;div class="content">
+&lt;pre># apt install autorandr&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>Либо из PyPI:&lt;/p>
+&lt;/div>
+&lt;div class="literalblock">
+&lt;div class="content">
+&lt;pre>$ pip install autorandr&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>При запуске команды &lt;code>autorandr&lt;/code> она выведет список сохранённых профилей (current — текущий профиль, detected — подходящий под текущие подключённые устройства):&lt;/p>
+&lt;/div>
+&lt;div class="literalblock">
+&lt;div class="content">
+&lt;pre>$ autorandr
+office (detected) (current)
+home
+laptop&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>Для создания профиля нужно подключить и настроить мониторы и выполнить команду &lt;code>--save&lt;/code>:&lt;/p>
+&lt;/div>
+&lt;div class="literalblock">
+&lt;div class="content">
+&lt;pre>$ autorandr --save config_name&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>Для загрузки конкретного профиля используется команда &lt;code>--load&lt;/code>:&lt;/p>
+&lt;/div>
+&lt;div class="literalblock">
+&lt;div class="content">
+&lt;pre>$ autorandr --load config_name&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>Или можно использовать команду &lt;code>--change&lt;/code>, чтобы автоматически выбрать и установить подходящий профиль:&lt;/p>
+&lt;/div>
+&lt;div class="literalblock">
+&lt;div class="content">
+&lt;pre>$ autorandr --change&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>Команд &lt;code>--load&lt;/code> и &lt;code>--change&lt;/code> достаточно для управления профилями. Можно запускать их из терминала или повесить на хоткей. Например, создать скрипт &lt;code>display-profile-auto.sh&lt;/code>:&lt;/p>
+&lt;/div>
+&lt;div class="literalblock">
+&lt;div class="content">
+&lt;pre>#!/usr/bin/env sh
+autorandr --change&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>Так же удобно добавить выполнение &lt;code>--change&lt;/code> в стартовый скрипт своего WM/DE, например в &lt;code>~/.xinitrc&lt;/code>, чтобы автоматически загружать нужный профиль при запуске графической системы.&lt;/p>
+&lt;/div>
+&lt;/div>
+&lt;/div>
+&lt;div class="sect1">
+&lt;h2 id="_rofi">Rofi&lt;/h2>
+&lt;div class="sectionbody">
+&lt;div class="paragraph">
+&lt;p>Для удобного ручного переключения между профилями можно создать диалоговое окно с выбором профиля в &lt;a href="https://github.com/davatorium/rofi">Rofi&lt;/a>. Мы будем использовать Rofi как генератор меню для выбора нужного профиля.&lt;/p>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>Устанавливаем Rofi из репозитория:&lt;/p>
+&lt;/div>
+&lt;div class="literalblock">
+&lt;div class="content">
+&lt;pre># apt install rofi&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>Создаём скрипт &lt;code>display-profile-menu.sh&lt;/code>:&lt;/p>
+&lt;/div>
+&lt;div class="literalblock">
+&lt;div class="content">
+&lt;pre>#!/usr/bin/env sh
+autorandr \
+| rofi -dmenu -width 25 -no-fixed-num-lines -no-custom -p &amp;#34;Display profile&amp;#34; \
+| awk &amp;#39;{print $1}&amp;#39; \
+| xargs autorandr --load&lt;/pre>
+&lt;/div>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>Он выводит меню с заголовком &amp;#34;Display profile&amp;#34; и списком доступных профилей. Можно выбирать профиль стрелками с клавиатуры, а так же фильтровать значения по введённому тексту. Итоговое меню выглядит так:&lt;/p>
+&lt;/div>
+&lt;div class="imageblock">
+&lt;div class="content">
+&lt;img src="../post/images/rofi-autorandr-popup.png" alt="Rofi switcher UI"/>
+&lt;/div>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>Цвета, стиль и функции меню можно настраивать (см. документацию Rofi).&lt;/p>
+&lt;/div>
+&lt;div class="paragraph">
+&lt;p>Скрипт так же можно повесить на хоткей. У меня в системе есть 2 хоткея — для &lt;code>display-profile-auto.sh&lt;/code> и &lt;code>display-profile-menu.sh&lt;/code> — автоматическое и ручное переключение профилей мониторов.&lt;/p>
+&lt;/div>
+&lt;/div>
+&lt;/div></description></item><item><title>Создание и публикация пакета в PyPI</title><link>https://anlar.github.io/ru/2023-09-13-python-package/</link><pubDate>Wed, 13 Sep 2023 00:00:00 +0400</pubDate><guid>https://anlar.github.io/ru/2023-09-13-python-package/</guid><description>&lt;div class="paragraph">
 &lt;p>В экосистеме Python существует много систем для сборки и публикации пакетов. Здесь описывается самый простой и, насколько это возможно, &amp;#34;официальный и современный&amp;#34; на данный момент способ. Для примера используется консольное приложение на Python, которое можно будет как запускать из командной строки, так и использовать как библиотеку в других приложениях.&lt;/p>
 &lt;/div>
 &lt;div class="paragraph">
