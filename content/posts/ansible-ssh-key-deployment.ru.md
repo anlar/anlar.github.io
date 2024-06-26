@@ -16,11 +16,11 @@ aliases: ['/ru/2022-12-02-ansible-ssh-key-deployment/']
 
 **Плейбук `deploy-ssh-key.yml`:**
 
-```yml
-- name: Generate key on head host <pre><b>**1**</b></pre>
+```yml {hl_lines=[1, 4, 12, 16, 26]}
+- name: Generate key on head host
   hosts: head
   tasks:
-    - name: Generate SSH key <2>
+    - name: Generate SSH key
       community.crypto.openssh_keypair:
         path: /home/head-user/.ssh/id_ed25519
         type: ed25519
@@ -28,11 +28,11 @@ aliases: ['/ru/2022-12-02-ansible-ssh-key-deployment/']
         group: head-user
       register: key_result
 
-    - name: Set public SSH key variable <3>
+    - name: Set public SSH key variable
       ansible.builtin.set_fact:
         public_ssh_key: "{{ key_result.public_key }}"
 
-    - name: Add host to known_hosts <4>
+    - name: Add host to known_hosts
       include_tasks:
         file: add-known-host.yml
       vars:
@@ -42,7 +42,7 @@ aliases: ['/ru/2022-12-02-ansible-ssh-key-deployment/']
         - node2
         - node3
 
-- name: Copy generated SSH public key to nodes <5>
+- name: Copy generated SSH public key to nodes
   hosts: node1,node2,node3
   tasks:
     - name: Copy SSH public key
@@ -60,12 +60,12 @@ aliases: ['/ru/2022-12-02-ansible-ssh-key-deployment/']
 
 **Файл `add-known-host.yml`:**
 
-```yml
-- name: "Get key from host {{ cfg_node }}" <1>
+```yml {hl_lines=[1, 5]}
+- name: "Get key from host {{ cfg_node }}"
   command: "ssh-keyscan -t ecdsa {{ hostvars[ cfg_node ].ansible_host}} | grep -v ^#"
   register: ecdsa_key
 
-- name: Add key to known_hosts <2>
+- name: Add key to known_hosts
   known_hosts:
     name: "{{ hostvars[ cfg_node ].ansible_host }}"
     path: /home/head-user/.ssh/known_hosts
