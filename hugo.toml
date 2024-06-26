@@ -71,7 +71,7 @@ defaultContentLanguage = 'ru'
   home = "right"
   list = "right"
   single = false
-  widgets = ["recent", "categories", "taglist", "social", "languages"]
+  widgets = ["recent", "categories", "taglist", "social"]
 
 [Params.widgets]
   recent_num = 5
