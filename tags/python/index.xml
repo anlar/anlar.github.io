@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Python on Блог AnLar</title><link>https://anlar.github.io/tags/python/</link><description>Recent content in Python on Блог AnLar</description><generator>Hugo</generator><language>ru</language><lastBuildDate>Wed, 13 Sep 2023 00:00:00 +0400</lastBuildDate><atom:link href="https://anlar.github.io/tags/python/index.xml" rel="self" type="application/rss+xml"/><item><title>Создание и публикация пакета в PyPI</title><link>https://anlar.github.io/2023-09-13-python-package/</link><pubDate>Wed, 13 Sep 2023 00:00:00 +0400</pubDate><guid>https://anlar.github.io/2023-09-13-python-package/</guid><description>&lt;p>В экосистеме Python существует много систем для сборки и публикации пакетов. Здесь описывается самый простой и, насколько это возможно, &amp;ldquo;официальный и современный&amp;rdquo; на данный момент способ. Для примера используется консольное приложение на Python, которое можно будет как запускать из командной строки, так и использовать как библиотеку в других приложениях.&lt;/p>
+&lt;p>Примером пакета, собранного этим способом, является &lt;code>todoist-to-todotxt&lt;/code>:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://github.com/anlar/todoist-to-todotxt">Репозиторий проекта&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://pypi.org/project/todoist-to-todotxt/">Страница в PyPI&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="подготовка">Подготовка&lt;/h2>
+&lt;p>Сборка будет проходить в Ubuntu. Для работы понадобится Python 3, pip (пакетный менеджер) и virtualenv (для изолированной сборки пакета):&lt;/p>
+&lt;pre>&lt;code># apt install python3-pip python3-venv
+&lt;/code>&lt;/pre>
+&lt;p>Также нужна система для сборки проектов Python:&lt;/p>
+&lt;pre>&lt;code>$ pip install --upgrade build
+&lt;/code>&lt;/pre>
+&lt;p>И утилита для загрузки пакетов в PyPI:&lt;/p>
+&lt;pre>&lt;code>$ pip install --upgrade twine
+&lt;/code>&lt;/pre>
+&lt;h2 id="структура-проекта">Структура проекта&lt;/h2>
+&lt;p>Будем создавать проект с названием &lt;code>project-a&lt;/code>. Для этого нужна следующая структура файлов:&lt;/p>
+&lt;p>&lt;strong>Директория проекта:&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="background-color:#e5e5e5">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;span style="background-color:#e5e5e5">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+&lt;/span>&lt;/span>&lt;span style="background-color:#e5e5e5">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+&lt;/span>&lt;/span>&lt;span style="background-color:#e5e5e5">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+&lt;/span>&lt;/span>&lt;span style="background-color:#e5e5e5">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+&lt;/span>&lt;/span>&lt;span style="background-color:#e5e5e5">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>package-a/
+&lt;/span>&lt;/span>&lt;span style="display:flex; background-color:#e5e5e5">&lt;span>├── src
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>│   └── package_a
+&lt;/span>&lt;/span>&lt;span style="display:flex; background-color:#e5e5e5">&lt;span>│   ├── __init__.py
+&lt;/span>&lt;/span>&lt;span style="display:flex; background-color:#e5e5e5">&lt;span>│   └── main.py
+&lt;/span>&lt;/span>&lt;span style="display:flex; background-color:#e5e5e5">&lt;span>├── README.md
+&lt;/span>&lt;/span>&lt;span style="display:flex; background-color:#e5e5e5">&lt;span>├── LICENSE.txt
+&lt;/span>&lt;/span>&lt;span style="display:flex; background-color:#e5e5e5">&lt;span>└── pyproject.toml
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ol>
+&lt;li>&lt;strong>&amp;lt;2&amp;gt;&lt;/strong> Директория с исходным кодом проекта.&lt;/li>
+&lt;li>&lt;strong>&amp;lt;4&amp;gt;&lt;/strong> Пустой файл &lt;code>\\__init__.py&lt;/code> для обозначения пакета.&lt;/li>
+&lt;li>&lt;strong>&amp;lt;5&amp;gt;&lt;/strong> Главный файл с кодом.&lt;/li>
+&lt;li>&lt;strong>&amp;lt;6&amp;gt;&lt;/strong> Файл с описанием проекта.&lt;/li>
+&lt;li>&lt;strong>&amp;lt;7&amp;gt;&lt;/strong> Лицензия проекта (выбираем лицензию и копируем текст отсюда: &lt;a href="https://choosealicense.com/)">https://choosealicense.com/)&lt;/a>.&lt;/li>
+&lt;li>&lt;strong>&amp;lt;8&amp;gt;&lt;/strong> Файл с описанием пакета (необходим для сборки).&lt;/li>
+&lt;/ol>
+&lt;p>Добавим простой код в &lt;code>main.py&lt;/code>, который выводит название проекта:&lt;/p>
+&lt;p>&lt;strong>main.py:&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#177500">#!/usr/bin/env python3&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a90d91">def&lt;/span> &lt;span style="color:#000">cli&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a90d91">print&lt;/span>(&lt;span style="color:#c41a16">&amp;#34;Project A&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a90d91">if&lt;/span> &lt;span style="color:#000">__name__&lt;/span> &lt;span style="color:#000">==&lt;/span> &lt;span style="color:#c41a16">&amp;#34;__main__&amp;#34;&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">cli&lt;/span>()
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>Для описания сборки используется файл &lt;code>pyproject.toml&lt;/code>, который является &amp;ldquo;фронтендом&amp;rdquo; для разных систем сборки (в данном примере используется &lt;code>setuptools&lt;/code>).&lt;/p>
+&lt;p>&lt;strong>pyproject.toml:&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;">&lt;code>&lt;span style="background-color:#e5e5e5">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="background-color:#e5e5e5">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+&lt;/span>&lt;span style="background-color:#e5e5e5">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+&lt;/span>&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;">&lt;code class="language-toml" data-lang="toml">&lt;span style="display:flex; background-color:#e5e5e5">&lt;span>[&lt;span style="color:#000">build-system&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">requires&lt;/span> = [&lt;span style="color:#c41a16">&amp;#34;setuptools&amp;gt;=61.0&amp;#34;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">build-backend&lt;/span> = &lt;span style="color:#c41a16">&amp;#34;setuptools.build_meta&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex; background-color:#e5e5e5">&lt;span>[&lt;span style="color:#000">project&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">name&lt;/span> = &lt;span style="color:#c41a16">&amp;#34;package-a&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">version&lt;/span> = &lt;span style="color:#c41a16">&amp;#34;0.0.1&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">authors&lt;/span> = [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> { &lt;span style="color:#000">name&lt;/span>=&lt;span style="color:#c41a16">&amp;#34;Developer Name&amp;#34;&lt;/span>, &lt;span style="color:#000">email&lt;/span>=&lt;span style="color:#c41a16">&amp;#34;developer-email@test.com&amp;#34;&lt;/span> },
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">description&lt;/span> = &lt;span style="color:#c41a16">&amp;#34;Dummy package A&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">readme&lt;/span> = &lt;span style="color:#c41a16">&amp;#34;README.md&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">license&lt;/span> = { &lt;span style="color:#000">file&lt;/span> = &lt;span style="color:#c41a16">&amp;#34;LICENSE.txt&amp;#34;&lt;/span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">requires-python&lt;/span> = &lt;span style="color:#c41a16">&amp;#34;&amp;gt;=3.7&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">classifiers&lt;/span> = [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#c41a16">&amp;#34;Programming Language :: Python :: 3&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#c41a16">&amp;#34;License :: OSI Approved :: MIT License&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#c41a16">&amp;#34;Operating System :: OS Independent&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">keywords&lt;/span> = [&lt;span style="color:#c41a16">&amp;#34;dummy&amp;#34;&lt;/span>, &lt;span style="color:#c41a16">&amp;#34;test&amp;#34;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex; background-color:#e5e5e5">&lt;span>[&lt;span style="color:#000">project&lt;/span>.&lt;span style="color:#000">scripts&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#000">package-a&lt;/span> = &lt;span style="color:#c41a16">&amp;#34;package_a.main:cli&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#000">project&lt;/span>.&lt;span style="color:#000">urls&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#c41a16">&amp;#34;Homepage&amp;#34;&lt;/span> = &lt;span style="color:#c41a16">&amp;#34;https://github.com/anlar/package-a&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#c41a16">&amp;#34;Repository&amp;#34;&lt;/span> = &lt;span style="color:#c41a16">&amp;#34;https://github.com/anlar/package-a&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#c41a16">&amp;#34;Bug Tracker&amp;#34;&lt;/span> = &lt;span style="color:#c41a16">&amp;#34;https://github.com/anlar/package-a/issues&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ol>
+&lt;li>&lt;strong>&amp;lt;1&amp;gt;&lt;/strong> Описание выбранной системы сборки для пакета.&lt;/li>
+&lt;li>&lt;strong>&amp;lt;5&amp;gt;&lt;/strong> Мета-информация о пакете.&lt;/li>
+&lt;li>&lt;strong>&amp;lt;22&amp;gt;&lt;/strong> Название исполняемого файла, который будет создан для запуска скрипта.&lt;/li>
+&lt;/ol>
+&lt;h2 id="сборка">Сборка&lt;/h2>
+&lt;p>Запускаем сборку пакета из директории &lt;code>package-a&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>$ python -m build
+&lt;/code>&lt;/pre>
+&lt;p>В результате получим собранный пакет в директории &lt;code>dist&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>package_a-0.0.1-py3-none-any.whl
+package-a-0.0.1.tar.gz
+&lt;/code>&lt;/pre>
+&lt;h2 id="публикация-пакета">Публикация пакета&lt;/h2>
+&lt;p>Для публикации сначала можно использовать тестовый репозиторий PyPI - &lt;a href="https://test.pypi.org/">TestPyPI&lt;/a>. После того, как загрузка и установка пакета будут протестированы, по аналогичной схеме можно загружать пакет в PyPI.&lt;/p>
+&lt;p>Регистрируемся в TestPyPI, подключаем двухфакторную аутентификацию (без неё не будет работать загрузка пакетов) и создаём API token: &lt;a href="https://test.pypi.org/manage/account/#api-tokens">https://test.pypi.org/manage/account/#api-tokens&lt;/a>.&lt;/p>
+&lt;p>Теперь можно загрузить собранный пакет:&lt;/p>
+&lt;pre>&lt;code>$ python -m twine upload --repository testpypi dist/*
+&lt;/code>&lt;/pre>
+&lt;p>Потребуется ввести имя - используется &lt;code>\\__token__&lt;/code>, и пароль - созданный API token.&lt;/p>
+&lt;p>После успешной загрузки можно установить загруженный пакет из репозитория:&lt;/p>
+&lt;pre>&lt;code>$ pip install -i https://test.pypi.org/simple/ package-a
+&lt;/code>&lt;/pre>
+&lt;p>Далее, после завершения тестирования в TestPyPI, нужно зарегистрироваться в основном репозитории PyPI (и получить новый API token) и использовать аналогичные команды для загрузки и установки пакета:&lt;/p>
+&lt;pre>&lt;code>$ python -m twine upload dist/*
+$ pip install package-a
+&lt;/code>&lt;/pre></description></item></channel></rss>

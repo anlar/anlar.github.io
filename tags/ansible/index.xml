@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Ansible on Блог AnLar</title><link>https://anlar.github.io/tags/ansible/</link><description>Recent content in Ansible on Блог AnLar</description><generator>Hugo</generator><language>ru</language><lastBuildDate>Fri, 02 Dec 2022 00:00:00 +0400</lastBuildDate><atom:link href="https://anlar.github.io/tags/ansible/index.xml" rel="self" type="application/rss+xml"/><item><title>Загрузка SSH-ключей с помощью Ansible</title><link>https://anlar.github.io/2022-12-02-ansible-ssh-key-deployment/</link><pubDate>Fri, 02 Dec 2022 00:00:00 +0400</pubDate><guid>https://anlar.github.io/2022-12-02-ansible-ssh-key-deployment/</guid><description>&lt;p>При развёртывании систем бывает нужно сгенерировать SSH-ключи, которые будут использовать удалённые серверы для доступа друг к другу. Например, родительский сервер &lt;code>head&lt;/code> должен иметь доступ по SSH к нескольким дочерним серверам &lt;code>node*&lt;/code>. Ниже приведён пример плейбука для Ansible, который добавляет на сервер &lt;code>head&lt;/code> новый SSH-ключ и размещает его публичную часть на серверы &lt;code>node*&lt;/code>. Т.е. после его выполнения родительский сервер будет иметь доступ по SSH к дочерним.&lt;/p>
+&lt;p>Плейбук является идемпотентным, т.е. при повторном выполнении он проверяет, что ключ уже сгенерирован и размещен на серверах. Но если ключ или запись в &lt;code>known_hosts&lt;/code> будут удалены, то он их восстановит.&lt;/p>
+&lt;p>&lt;strong>Плейбук &lt;code>deploy-ssh-key.yml&lt;/code>:&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;">&lt;code>&lt;span style="background-color:#e5e5e5">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="background-color:#e5e5e5">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="background-color:#e5e5e5">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+&lt;/span>&lt;span style="background-color:#e5e5e5">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+&lt;/span>&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+&lt;/span>&lt;span style="background-color:#e5e5e5">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+&lt;/span>&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;">&lt;code class="language-yml" data-lang="yml">&lt;span style="display:flex; background-color:#e5e5e5">&lt;span>- &lt;span style="color:#000">name&lt;/span>: &lt;span style="color:#1c01ce">Generate key on head host&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">hosts&lt;/span>: &lt;span style="color:#1c01ce">head&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">tasks&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex; background-color:#e5e5e5">&lt;span> - &lt;span style="color:#000">name&lt;/span>: &lt;span style="color:#1c01ce">Generate SSH key&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">community.crypto.openssh_keypair&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">path&lt;/span>: &lt;span style="color:#1c01ce">/home/head-user/.ssh/id_ed25519&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">type&lt;/span>: &lt;span style="color:#1c01ce">ed25519&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">owner&lt;/span>: &lt;span style="color:#1c01ce">head-user&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">group&lt;/span>: &lt;span style="color:#1c01ce">head-user&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">register&lt;/span>: &lt;span style="color:#1c01ce">key_result&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex; background-color:#e5e5e5">&lt;span> - &lt;span style="color:#000">name&lt;/span>: &lt;span style="color:#1c01ce">Set public SSH key variable&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">ansible.builtin.set_fact&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">public_ssh_key&lt;/span>: &lt;span style="color:#c41a16">&amp;#34;{{ key_result.public_key }}&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex; background-color:#e5e5e5">&lt;span> - &lt;span style="color:#000">name&lt;/span>: &lt;span style="color:#1c01ce">Add host to known_hosts&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">include_tasks&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">file&lt;/span>: &lt;span style="color:#1c01ce">add-known-host.yml&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">vars&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">cfg_node&lt;/span>: &lt;span style="color:#c41a16">&amp;#34;{{ item }}&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">loop&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#1c01ce">node1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#1c01ce">node2&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#1c01ce">node3&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex; background-color:#e5e5e5">&lt;span>- &lt;span style="color:#000">name&lt;/span>: &lt;span style="color:#1c01ce">Copy generated SSH public key to nodes&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">hosts&lt;/span>: &lt;span style="color:#1c01ce">node1,node2,node3&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">tasks&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#000">name&lt;/span>: &lt;span style="color:#1c01ce">Copy SSH public key&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">ansible.posix.authorized_key&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">user&lt;/span>: &lt;span style="color:#1c01ce">node-user&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">state&lt;/span>: &lt;span style="color:#1c01ce">present&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">key&lt;/span>: &lt;span style="color:#c41a16">&amp;#34;{{ hostvars[&amp;#39;head&amp;#39;][&amp;#39;public_ssh_key&amp;#39;] }}&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ol>
+&lt;li>&lt;strong>&amp;lt;1&amp;gt;&lt;/strong> Первый play: на главном хосте создаём SSH-ключ и добавляем в &lt;code>known_hosts&lt;/code> все дочерние хосты.&lt;/li>
+&lt;li>&lt;strong>&amp;lt;4&amp;gt;&lt;/strong> Генерируем ed25519 SSH-ключ.&lt;/li>
+&lt;li>&lt;strong>&amp;lt;12&amp;gt;&lt;/strong> Записываем публичную часть ключа в переменную.&lt;/li>
+&lt;li>&lt;strong>&amp;lt;16&amp;gt;&lt;/strong> Добавляем все дочерние хосты в &lt;code>known_hosts&lt;/code>.&lt;/li>
+&lt;li>&lt;strong>&amp;lt;26&amp;gt;&lt;/strong> Второй play: на каждом дочернем хосте заносим главный хост в список авторизованных ключей.&lt;/li>
+&lt;/ol>
+&lt;p>&lt;strong>Файл &lt;code>add-known-host.yml&lt;/code>:&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;">&lt;code>&lt;span style="background-color:#e5e5e5">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+&lt;/span>&lt;span style="background-color:#e5e5e5">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+&lt;/span>&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;">&lt;code class="language-yml" data-lang="yml">&lt;span style="display:flex; background-color:#e5e5e5">&lt;span>- &lt;span style="color:#000">name&lt;/span>: &lt;span style="color:#c41a16">&amp;#34;Get key from host {{ cfg_node }}&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">command&lt;/span>: &lt;span style="color:#c41a16">&amp;#34;ssh-keyscan -t ecdsa {{ hostvars[ cfg_node ].ansible_host}} | grep -v ^#&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">register&lt;/span>: &lt;span style="color:#1c01ce">ecdsa_key&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex; background-color:#e5e5e5">&lt;span>- &lt;span style="color:#000">name&lt;/span>: &lt;span style="color:#1c01ce">Add key to known_hosts&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">known_hosts&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">name&lt;/span>: &lt;span style="color:#c41a16">&amp;#34;{{ hostvars[ cfg_node ].ansible_host }}&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">path&lt;/span>: &lt;span style="color:#1c01ce">/home/head-user/.ssh/known_hosts&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">key&lt;/span>: &lt;span style="color:#c41a16">&amp;#34;{{ ecdsa_key.stdout }}&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ol>
+&lt;li>&lt;strong>&amp;lt;1&amp;gt;&lt;/strong> Генерируем запись для &lt;code>known_hosts&lt;/code>.&lt;/li>
+&lt;li>&lt;strong>&amp;lt;5&amp;gt;&lt;/strong> Заносим родительский хост в &lt;code>known_hosts&lt;/code>.&lt;/li>
+&lt;/ol>
+&lt;h2 id="примечания">Примечания&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>Запись дочерних хостов вынесена в отдельный файл, т.к. в Ansible &lt;a href="https://github.com/ansible/ansible/issues/13262#issuecomment-335904803">нельзя создавать цикл по нескольким переменным для блоков&lt;/a> (а у нас 2 задачи - генерация записи через &lt;code>ssh-keyscan&lt;/code> и запись в &lt;code>known_hosts&lt;/code>). Если дочерний хост только один, то можно объединить всё в один плейбук.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Для доступа к переменной &lt;code>public_ssh_key&lt;/code> используется &lt;code>hostvars['head']&lt;/code>, т.к. переменные хранятся на уровне хоста. Чтобы не привязываться к имени конкретного хоста, можно завести dummy-хост, в котором будут храниться общие переменные для всего плейбука. Например:&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-yml" data-lang="yml">&lt;span style="display:flex;">&lt;span>- &lt;span style="color:#000">name&lt;/span>: &lt;span style="color:#1c01ce">Add dummy host with variable&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">ansible.builtin.add_host&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">name&lt;/span>: &lt;span style="color:#1c01ce">dummy-host&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#000">public_ssh_key&lt;/span>: &lt;span style="color:#c41a16">&amp;#34;{{ key_result.public_key }}&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Можно не добавлять родительский хост в &lt;code>known_hosts&lt;/code> дочерних, тогда нужно будет при работе по SSH использовать атрибут &lt;code>StrictHostKeyChecking=no&lt;/code>.&lt;/p>
+&lt;/li>
+&lt;/ol></description></item></channel></rss>

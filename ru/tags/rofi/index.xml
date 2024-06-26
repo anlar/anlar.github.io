@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>rofi on Блог AnLar</title><link>https://anlar.github.io/ru/tags/rofi/</link><description>Recent content in rofi on Блог AnLar</description><generator>Hugo -- gohugo.io</generator><language>ru</language><lastBuildDate>Fri, 22 Sep 2023 00:00:00 +0400</lastBuildDate><atom:link href="https://anlar.github.io/ru/tags/rofi/index.xml" rel="self" type="application/rss+xml"/><item><title>Переключение профилей мониторов с помощью autorandr и Rofi</title><link>https://anlar.github.io/ru/2023-09-22-autorandr-rofi/</link><pubDate>Fri, 22 Sep 2023 00:00:00 +0400</pubDate><guid>https://anlar.github.io/ru/2023-09-22-autorandr-rofi/</guid><description>&lt;div class="paragraph">
-&lt;p>При работе (особенно если у тебя ноутбук и ты им пользуешься в разных локациях) бывает нужно переключаться между разными конфигурациями мониторов.
-Сюда входит их разрешение, взаимное расположение и статус (вкл/выкл).
-Обычно система умеет самостоятельно изменять профиль отображения при подключении и отключении дисплеев, но часто это не соответствует тому, что хочется, и приходится вручную настраивать профиль через параметры мониторов в системе.
-Но можно упростить и автоматизировать этот процесс с помощью утилиты &lt;code>autorandr&lt;/code>, которая умеет запоминать и (автоматически) применять настройки мониторов.
-А с помощью Rofi можно создать удобное меню для ручного переключения между профилями.&lt;/p>
-&lt;/div></description></item></channel></rss>

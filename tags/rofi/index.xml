@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Rofi on Блог AnLar</title><link>https://anlar.github.io/tags/rofi/</link><description>Recent content in Rofi on Блог AnLar</description><generator>Hugo</generator><language>ru</language><lastBuildDate>Fri, 22 Sep 2023 00:00:00 +0400</lastBuildDate><atom:link href="https://anlar.github.io/tags/rofi/index.xml" rel="self" type="application/rss+xml"/><item><title>Переключение профилей мониторов с помощью autorandr и Rofi</title><link>https://anlar.github.io/2023-09-22-autorandr-rofi/</link><pubDate>Fri, 22 Sep 2023 00:00:00 +0400</pubDate><guid>https://anlar.github.io/2023-09-22-autorandr-rofi/</guid><description>&lt;p>При работе (особенно если у тебя ноутбук и ты им пользуешься в разных локациях) бывает нужно переключаться между разными конфигурациями мониторов.
+Сюда входит их разрешение, взаимное расположение и статус (вкл/выкл).
+Обычно система умеет самостоятельно изменять профиль отображения при подключении и отключении дисплеев, но часто это не соответствует тому, что хочется, и приходится вручную настраивать профиль через параметры мониторов в системе.
+Но можно упростить и автоматизировать этот процесс с помощью утилиты &lt;code>autorandr&lt;/code>, которая умеет запоминать и (автоматически) применять настройки мониторов.
+А с помощью Rofi можно создать удобное меню для ручного переключения между профилями.&lt;/p>
+&lt;h2 id="autorandr">autorandr&lt;/h2>
+&lt;p>&lt;a href="https://github.com/phillipberndt/autorandr">autorandr&lt;/a> &amp;ndash; это удобная утилита, которая может сохранять информацию о конфигурации мониторов от &lt;code>xrandr&lt;/code> в отдельные профили и применять их (вручную, или автоматически определяя подходящий профиль).
+Для определения мониторов используется его идентификатор &lt;a href="https://en.wikipedia.org/wiki/Extended_Display_Identification_Data">EDID&lt;/a>, т.е. корректно определяются разные мониторы, даже если они подключаются к одному порту.&lt;/p>
+&lt;p>Устанавливаем &lt;code>autorandr&lt;/code> из репозитория (deb-based дистрибутив Linux):&lt;/p>
+&lt;pre>&lt;code># apt install autorandr
+&lt;/code>&lt;/pre>
+&lt;p>Либо из PyPI:&lt;/p>
+&lt;pre>&lt;code>$ pip install autorandr
+&lt;/code>&lt;/pre>
+&lt;p>При запуске команды &lt;code>autorandr&lt;/code> она выведет список сохранённых профилей (current &amp;ndash; текущий профиль, detected &amp;ndash; подходящий под текущие подключённые устройства):&lt;/p>
+&lt;pre>&lt;code>$ autorandr
+office (detected) (current)
+home
+laptop
+&lt;/code>&lt;/pre>
+&lt;p>Для создания профиля нужно подключить и настроить мониторы и выполнить команду &lt;code>--save&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>$ autorandr --save config_name
+&lt;/code>&lt;/pre>
+&lt;p>Для загрузки конкретного профиля используется команда &lt;code>--load&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>$ autorandr --load config_name
+&lt;/code>&lt;/pre>
+&lt;p>Или можно использовать команду &lt;code>--change&lt;/code>, чтобы автоматически выбрать и установить подходящий профиль:&lt;/p>
+&lt;pre>&lt;code>$ autorandr --change
+&lt;/code>&lt;/pre>
+&lt;p>Команд &lt;code>--load&lt;/code> и &lt;code>--change&lt;/code> достаточно для управления профилями. Можно запускать их из терминала или повесить на хоткей. Например, создать скрипт &lt;code>display-profile-auto.sh&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#633820">#!/usr/bin/env sh
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#633820">&lt;/span>autorandr --change
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>Так же удобно добавить выполнение &lt;code>--change&lt;/code> в стартовый скрипт своего WM/DE, например в &lt;code>~/.xinitrc&lt;/code>, чтобы автоматически загружать нужный профиль при запуске графической системы.&lt;/p>
+&lt;h2 id="rofi">Rofi&lt;/h2>
+&lt;p>Для удобного ручного переключения между профилями можно создать диалоговое окно с выбором профиля в &lt;a href="https://github.com/davatorium/rofi">Rofi&lt;/a>. Мы будем использовать Rofi как генератор меню для выбора нужного профиля.&lt;/p>
+&lt;p>Устанавливаем Rofi из репозитория:&lt;/p>
+&lt;pre>&lt;code># apt install rofi
+&lt;/code>&lt;/pre>
+&lt;p>Создаём скрипт &lt;code>display-profile-menu.sh&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#633820">#!/usr/bin/env sh
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#633820">&lt;/span>autorandr &lt;span style="color:#c41a16">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#c41a16">&lt;/span> | rofi -dmenu -width &lt;span style="color:#1c01ce">25&lt;/span> -no-fixed-num-lines -no-custom -p &lt;span style="color:#c41a16">&amp;#34;Display profile&amp;#34;&lt;/span> &lt;span style="color:#c41a16">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#c41a16">&lt;/span> | awk &lt;span style="color:#c41a16">&amp;#39;{print $1}&amp;#39;&lt;/span> &lt;span style="color:#c41a16">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#c41a16">&lt;/span> | xargs autorandr --load
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>Он выводит меню с заголовком &amp;ldquo;Display profile&amp;rdquo; и списком доступных профилей. Можно выбирать профиль стрелками с клавиатуры, а так же фильтровать значения по введённому тексту. Итоговое меню выглядит так:&lt;/p>
+&lt;p>&lt;img alt="Rofi switcher UI" src="../post/images/rofi-autorandr-popup.png">&lt;/p>
+&lt;p>Цвета, стиль и функции меню можно настраивать (см. документацию Rofi).&lt;/p>
+&lt;p>Скрипт так же можно повесить на хоткей. У меня в системе есть 2 хоткея &amp;ndash; для &lt;code>display-profile-auto.sh&lt;/code> и &lt;code>display-profile-menu.sh&lt;/code> &amp;ndash; автоматическое и ручное переключение профилей мониторов.&lt;/p></description></item></channel></rss>
