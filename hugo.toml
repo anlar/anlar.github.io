@@ -1,0 +1,84 @@
+# MAIN
+
+baseURL = 'https://anlar.github.io/'
+
+theme = 'mainroad'
+
+defaultContentLanguage = 'ru'
+
+[permalinks]
+  posts = '/:year-:month-:day-:filename/'
+
+[markup]
+  [markup.highlight]
+    style = 'xcode'
+    lineNoStart = 1
+    lineNos = true
+
+# MENU
+
+[languages]
+  [languages.ru]
+    languageCode = 'ru'
+    languageDirection = 'ltr'
+    languageName = 'Русский'
+    title = 'Блог AnLar'
+    weight = 1
+    #[languages.ru.params]
+    #  subtitle = ''
+    [languages.ru.menus]
+      [[languages.ru.menus.main]]
+        name = 'Блог'
+        pageRef = '/'
+        weight = 10
+      [[languages.ru.menus.main]]
+        name = 'Теги'
+        pageRef = '/tags'
+        weight = 20
+      [[languages.ru.menus.main]]
+        name = 'Обо мне'
+        url = '/about'
+        weight = 30
+  [languages.en]
+    languageCode = 'en'
+    languageDirection = 'ltr'
+    languageName = 'English'
+    title = 'Blog AnLar'
+    weight = 2
+    #[languages.en.params]
+    #  subtitle = ''
+    [languages.en.menus]
+      [[languages.en.menus.main]]
+        name = 'Blog'
+        pageRef = '/'
+        weight = 10
+      [[languages.en.menus.main]]
+        name = 'Tags'
+        pageRef = '/tags'
+        weight = 20
+      [[languages.en.menus.main]]
+        name = 'About'
+        url = '/en/about'
+        weight = 30
+
+# THEME: MAINROAD
+
+[Params]
+  post_meta = ["date", "categories", "translations"]
+  dateformat = "2006-01-02"
+
+[Params.sidebar]
+  home = "right"
+  list = "right"
+  single = false
+  widgets = ["recent", "categories", "taglist", "social", "languages"]
+
+[Params.widgets]
+  recent_num = 5
+  categories_counter = true
+  tags_counter = true
+
+[Params.widgets.social]
+  github = "anlar"
+  linkedin = "anton-larionov"
+
