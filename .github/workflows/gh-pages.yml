@@ -23,7 +23,7 @@ jobs:
           extended: true
 
       - name: Run Hugo
-        run: hugo --minify
+        run: git pull --recurse-submodules && hugo --minify
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
