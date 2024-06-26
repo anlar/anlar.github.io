@@ -22,16 +22,8 @@ jobs:
           hugo-version: 'latest'
           extended: true
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 2.7
-
-      - run: gem install asciidoctor asciidoctor-diagram coderay
-
       - name: Run Hugo
         run: |
-          alias asciidoctor="asciidoctor --attribute=experimental=true --attribute=icons=font"
           hugo --minify --destination ./public
 
       - name: Deploy
