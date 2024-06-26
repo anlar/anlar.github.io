@@ -152,7 +152,7 @@ package-a-0.0.1.tar.gz
 &lt;p>Теперь можно загрузить собранный пакет:&lt;/p>
 &lt;pre>&lt;code>$ python -m twine upload --repository testpypi dist/*
 &lt;/code>&lt;/pre>
-&lt;p>Потребуется ввести имя - используется &lt;code>\\__token__&lt;/code>, и пароль - созданный API token.&lt;/p>
+&lt;p>Потребуется ввести имя - используется &lt;code>__token__&lt;/code>, и пароль - созданный API token.&lt;/p>
 &lt;p>После успешной загрузки можно установить загруженный пакет из репозитория:&lt;/p>
 &lt;pre>&lt;code>$ pip install -i https://test.pypi.org/simple/ package-a
 &lt;/code>&lt;/pre>
