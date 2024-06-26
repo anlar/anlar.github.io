@@ -22,8 +22,11 @@ jobs:
           hugo-version: 'latest'
           extended: true
 
+      - name: Install theme
+        run: cd themes && rm -rf mainroad && git clone git@github.com:Vimux/Mainroad.git mainroad && cd ..
+        
       - name: Run Hugo
-        run: git pull --recurse-submodules && hugo --minify
+        run: hugo --minify
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
