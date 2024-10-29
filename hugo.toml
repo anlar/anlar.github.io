@@ -39,6 +39,10 @@ defaultContentLanguage = 'ru'
         name = 'Обо мне'
         url = '/about'
         weight = 30
+      [[languages.ru.menus.main]]
+        name = 'RSS'
+        url = '/index.xml'
+        weight = 100
   [languages.en]
     languageCode = 'en'
     languageDirection = 'ltr'
@@ -60,6 +64,10 @@ defaultContentLanguage = 'ru'
         name = 'About'
         url = '/en/about'
         weight = 30
+      [[languages.en.menus.main]]
+        name = 'RSS'
+        url = '/index.xml'
+        weight = 100
 
 # THEME: MAINROAD
 
