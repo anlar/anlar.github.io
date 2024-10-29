@@ -20,8 +20,8 @@ jobs:
           extended: true
 
       - name: Install Mainroad theme
-        run: cd themes && git clone https://github.com/Vimux/Mainroad.git mainroad && cd ..
-        
+        run: cd themes && git clone https://github.com/anlar/hugo-theme-mainroad.git mainroad && cd ..
+
       - name: Run Hugo
         run: hugo --minify
 
