@@ -40,9 +40,11 @@ defaultContentLanguage = 'ru'
         url = '/about'
         weight = 30
       [[languages.ru.menus.main]]
-        name = 'RSS'
+        name = ' '
         url = '/index.xml'
         weight = 100
+          [[languages.ru.menus.main.params]]
+            partial = 'rss.svg'
   [languages.en]
     languageCode = 'en'
     languageDirection = 'ltr'
@@ -65,9 +67,11 @@ defaultContentLanguage = 'ru'
         url = '/en/about'
         weight = 30
       [[languages.en.menus.main]]
-        name = 'RSS'
+        name = ' '
         url = '/index.xml'
         weight = 100
+          [[languages.en.menus.main.params]]
+            partial = 'rss.svg'
 
 # THEME: MAINROAD
 
