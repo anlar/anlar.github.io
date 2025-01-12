@@ -62,6 +62,6 @@ laptop
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;p>Он выводит меню с заголовком &amp;ldquo;Display profile&amp;rdquo; и списком доступных профилей. Можно выбирать профиль стрелками с клавиатуры, а так же фильтровать значения по введённому тексту. Итоговое меню выглядит так:&lt;/p>
-&lt;p>&lt;img alt="Rofi switcher UI" src="../post/images/rofi-autorandr-popup.png">&lt;/p>
+&lt;p>&lt;img src="../post/images/rofi-autorandr-popup.png" alt="Rofi switcher UI">&lt;/p>
 &lt;p>Цвета, стиль и функции меню можно настраивать (см. документацию Rofi).&lt;/p>
 &lt;p>Скрипт так же можно повесить на хоткей. У меня в системе есть 2 хоткея &amp;ndash; для &lt;code>display-profile-auto.sh&lt;/code> и &lt;code>display-profile-menu.sh&lt;/code> &amp;ndash; автоматическое и ручное переключение профилей мониторов.&lt;/p></description></item></channel></rss>

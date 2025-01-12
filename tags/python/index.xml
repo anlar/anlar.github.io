@@ -44,7 +44,7 @@
 &lt;li>&lt;strong>&amp;lt;4&amp;gt;&lt;/strong> Пустой файл &lt;code>\\__init__.py&lt;/code> для обозначения пакета.&lt;/li>
 &lt;li>&lt;strong>&amp;lt;5&amp;gt;&lt;/strong> Главный файл с кодом.&lt;/li>
 &lt;li>&lt;strong>&amp;lt;6&amp;gt;&lt;/strong> Файл с описанием проекта.&lt;/li>
-&lt;li>&lt;strong>&amp;lt;7&amp;gt;&lt;/strong> Лицензия проекта (выбираем лицензию и копируем текст отсюда: &lt;a href="https://choosealicense.com/)">https://choosealicense.com/)&lt;/a>.&lt;/li>
+&lt;li>&lt;strong>&amp;lt;7&amp;gt;&lt;/strong> Лицензия проекта (выбираем лицензию и копируем текст отсюда: &lt;a href="https://choosealicense.com/%29">https://choosealicense.com/)&lt;/a>.&lt;/li>
 &lt;li>&lt;strong>&amp;lt;8&amp;gt;&lt;/strong> Файл с описанием пакета (необходим для сборки).&lt;/li>
 &lt;/ol>
 &lt;p>Добавим простой код в &lt;code>main.py&lt;/code>, который выводит название проекта:&lt;/p>

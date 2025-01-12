@@ -62,7 +62,7 @@ laptop
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;p>Он выводит меню с заголовком &amp;ldquo;Display profile&amp;rdquo; и списком доступных профилей. Можно выбирать профиль стрелками с клавиатуры, а так же фильтровать значения по введённому тексту. Итоговое меню выглядит так:&lt;/p>
-&lt;p>&lt;img alt="Rofi switcher UI" src="../post/images/rofi-autorandr-popup.png">&lt;/p>
+&lt;p>&lt;img src="../post/images/rofi-autorandr-popup.png" alt="Rofi switcher UI">&lt;/p>
 &lt;p>Цвета, стиль и функции меню можно настраивать (см. документацию Rofi).&lt;/p>
 &lt;p>Скрипт так же можно повесить на хоткей. У меня в системе есть 2 хоткея &amp;ndash; для &lt;code>display-profile-auto.sh&lt;/code> и &lt;code>display-profile-menu.sh&lt;/code> &amp;ndash; автоматическое и ручное переключение профилей мониторов.&lt;/p></description></item><item><title>Создание и публикация пакета в PyPI</title><link>https://anlar.github.io/2023-09-13-python-package/</link><pubDate>Wed, 13 Sep 2023 00:00:00 +0400</pubDate><guid>https://anlar.github.io/2023-09-13-python-package/</guid><description>&lt;p>В экосистеме Python существует много систем для сборки и публикации пакетов. Здесь описывается самый простой и, насколько это возможно, &amp;ldquo;официальный и современный&amp;rdquo; на данный момент способ. Для примера используется консольное приложение на Python, которое можно будет как запускать из командной строки, так и использовать как библиотеку в других приложениях.&lt;/p>
 &lt;p>Примером пакета, собранного этим способом, является &lt;code>todoist-to-todotxt&lt;/code>:&lt;/p>
@@ -110,7 +110,7 @@ laptop
 &lt;li>&lt;strong>&amp;lt;4&amp;gt;&lt;/strong> Пустой файл &lt;code>\\__init__.py&lt;/code> для обозначения пакета.&lt;/li>
 &lt;li>&lt;strong>&amp;lt;5&amp;gt;&lt;/strong> Главный файл с кодом.&lt;/li>
 &lt;li>&lt;strong>&amp;lt;6&amp;gt;&lt;/strong> Файл с описанием проекта.&lt;/li>
-&lt;li>&lt;strong>&amp;lt;7&amp;gt;&lt;/strong> Лицензия проекта (выбираем лицензию и копируем текст отсюда: &lt;a href="https://choosealicense.com/)">https://choosealicense.com/)&lt;/a>.&lt;/li>
+&lt;li>&lt;strong>&amp;lt;7&amp;gt;&lt;/strong> Лицензия проекта (выбираем лицензию и копируем текст отсюда: &lt;a href="https://choosealicense.com/%29">https://choosealicense.com/)&lt;/a>.&lt;/li>
 &lt;li>&lt;strong>&amp;lt;8&amp;gt;&lt;/strong> Файл с описанием пакета (необходим для сборки).&lt;/li>
 &lt;/ol>
 &lt;p>Добавим простой код в &lt;code>main.py&lt;/code>, который выводит название проекта:&lt;/p>
