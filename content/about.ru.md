@@ -1,7 +1,7 @@
 ---
 title: "Антон Ларионов"
 layout: staticpage
-_build:
+build:
   list: never
 ---
 
