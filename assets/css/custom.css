@@ -14,11 +14,17 @@
 /* Desktop menu - position RSS at right end */
 .desktop-menu {
   display: flex;
-  align-items: center;
+  align-items: stretch;
 }
 
 .desktop-menu .menu__item--rss {
   margin-left: auto;
+  display: flex;
+}
+
+.desktop-menu .menu__link--rss {
+  flex: 1;
+  display: flex;
 }
 
 .desktop-menu .menu__link--rss span {
