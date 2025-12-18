@@ -17,10 +17,7 @@ jobs:
         uses: peaceiris/actions-hugo@v3
         with:
           hugo-version: 'latest'
-          extended: true
-
-      - name: Install Mainroad theme
-        run: cd themes && git clone https://github.com/anlar/hugo-theme-mainroad.git mainroad && cd ..
+          extended: false
 
       - name: Run Hugo
         run: hugo --minify
