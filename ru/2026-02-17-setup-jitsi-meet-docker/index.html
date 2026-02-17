@@ -1,0 +1,126 @@
+<!doctype html><html class=no-js lang=ru><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Установка и настройка сервера Jitsi Meet в Docker - Блог AnLar</title><script>(function(e,t){e[t]=e[t].replace("no-js","js")})(document.documentElement,"className")</script><meta name=description content><link rel="shortcut icon" href=/favicon.ico><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=dns-prefetch href=//fonts.googleapis.com><link rel=dns-prefetch href=//fonts.gstatic.com><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700"><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=/css/v2-styles.css><link rel=stylesheet href=/css/custom.css></head><body class=body><div class="container container--outer"><header class=header><div class="container header__container"><div class=logo><a class=logo__link href=/ru/ title="Блог AnLar" rel=home><div class="logo__item logo__text"><div class=logo__title>Блог AnLar</div></div></a></div><nav class=menu><button class=menu__btn aria-label=Menu aria-expanded=false>
+<span class=menu__btn-line></span>
+<span class=menu__btn-line></span>
+<span class=menu__btn-line></span></button><div class=menu__overlay></div><ul class="menu__list desktop-menu"><li class=menu__item><a class=menu__link href=/ru/>Блог</a></li><li class=menu__item><a class=menu__link href=/ru/tags/>Теги</a></li><li class=menu__item><a class=menu__link href=/ru/about>Обо мне</a></li><li class="menu__item menu__item--rss"><a class="menu__link menu__link--rss" href=/ru/index.xml title="RSS Feed" rel=alternate type=application/rss+xml><svg class="menu__rss-icon icon icon-rss" width="24" height="24" viewBox="0 0 24 24"><path d="M6.503 20.752C6.503 22.546 5.047 24 3.252 24c-1.796.0-3.252-1.454-3.252-3.248s1.456-3.248 3.252-3.248c1.795.001 3.251 1.454 3.251 3.248zM0 8.18v4.811c6.05.062 10.96 4.966 11.022 11.009h4.817C15.777 15.29 8.721 8.242.0 8.18zm0-3.368C10.58 4.858 19.152 13.406 19.183 24H24c-.03-13.231-10.755-23.954-24-24v4.812z"/></svg></a></li></ul><div class=menu__drawer><div class=menu__drawer-header><span class=menu__drawer-title>Menu</span>
+<button class=menu__close aria-label="Close menu">
+<span class=menu__close-icon>×</span></button></div><ul class="menu__list mobile-menu"><li class=menu__item><a class=menu__link href=/ru/>Блог</a></li><li class=menu__item><a class=menu__link href=/ru/tags/>Теги</a></li><li class=menu__item><a class=menu__link href=/ru/about>Обо мне</a></li><li class="menu__item menu__item--rss"><a class="menu__link menu__link--rss" href=/ru/index.xml title="RSS Feed" rel=alternate type=application/rss+xml><svg class="menu__rss-icon icon icon-rss" width="24" height="24" viewBox="0 0 24 24"><path d="M6.503 20.752C6.503 22.546 5.047 24 3.252 24c-1.796.0-3.252-1.454-3.252-3.248s1.456-3.248 3.252-3.248c1.795.001 3.251 1.454 3.251 3.248zM0 8.18v4.811c6.05.062 10.96 4.966 11.022 11.009h4.817C15.777 15.29 8.721 8.242.0 8.18zm0-3.368C10.58 4.858 19.152 13.406 19.183 24H24c-.03-13.231-10.755-23.954-24-24v4.812z"/></svg>
+<span>RSS</span></a></li></ul></div></nav></div></header><div class="wrapper flex"><div class=primary><main class=main role=main><article class=post><header class=post__header><h1 class=post__title>Установка и настройка сервера Jitsi Meet в Docker</h1><div class="post__meta meta"><div class="meta__item-datetime meta__item"><svg class="meta__icon icon icon-time" width="16" height="14" viewBox="0 0 30 28"><path d="M15 0a14 14 0 110 28 1 1 0 010-28m0 3a3 3 0 100 22 3 3 0 000-22m1 4h-2v8.4l6.8 4.4L22 18l-6-3.8z"/></svg><time class=meta__text datetime=2026-02-17T12:31:02+01:00>февраля 17, 2026</time></div></div></header><div class="content post__content clearfix"><p><a href=https://jitsi.org/>Jitsi Meet</a> &ndash; это open source платформа для
+видео-звонков. Её легко развернуть на сервере (есть официальная Docker Compose
+конфигурация); работает в браузере, на
+<a href=https://flathub.org/en-GB/apps/org.jitsi.jitsi-meet>десктопе</a>, на
+<a href=https://f-droid.org/en/packages/org.jitsi.meet/>Android</a> и на
+<a href=https://apps.apple.com/us/app/jitsi-meet/id1165103905>iPhone</a>; относительно
+нетребовательна к ресурсам.</p><h2 id=требования>Требования</h2><ol><li><p>Доменное имя.</p><p>В примере используется <code>example.com</code>.</p></li><li><p>Сервер с Linux.</p><p>В моих тестах для небольших конференций (до 5 человек с включённым видео)
+было достаточно 1x3.3 ГГц CPU и 2 ГБ RAM (минимальная конфигурация у моего
+хостинга). Подробней о требованиях: <a href=https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-requirements/>Self-Hosting Deployment
+Requirements</a></p></li></ol><h2 id=установка-и-настройка>Установка и настройка</h2><p>Для примера установки используется сервер с CentOS Stream 10. Для других
+дистрибутивов ход установки аналогичен (с поправкой на другие пакетные
+менеджеры).</p><h3 id=установка-docker>Установка Docker</h3><p>Сначала необходимо установить Docker (официальное руководство по установке:
+<a href=https://docs.docker.com/engine/install/centos/>Install Docker Engine on
+CentOS</a>).</p><p>Добавляем репозиторий Docker CE и устанавливаем Docker:</p><pre tabindex=0><code># dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+</code></pre><pre tabindex=0><code># dnf install docker-ce
+</code></pre><p>Запускаем демон Docker:</p><pre tabindex=0><code># systemctl enable --now docker
+</code></pre><h3 id=установка-jitsi-meet>Установка Jitsi Meet</h3><p>Далее нужно установить и запустить сервер Jitsi Meet (официальное руководство
+по установке: <a href=https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-docker/>Jitsi Self-Hosting
+Guide</a>).</p><p>Установка будет в директорию <code>/opt</code>: <code>/opt/jitsi-docker-jitsi-meet-$ID</code> для
+файлов Docker Compose и <code>/opt/jitsi-config</code> для рабочих файлов и настроек
+компонентов Jitsi Meet. Место установки можно поменять на любое другое.</p><p>Скачиваем дистрибутив с Docker Compose файлами:</p><pre tabindex=0><code># cd /opt
+# wget $(wget -q -O - https://api.github.com/repos/jitsi/docker-jitsi-meet/releases/latest | grep zip | cut -d\&#34; -f4) -O jitsi-docker.zip
+</code></pre><p>Извлекаем из него необходимые файлы:</p><pre tabindex=0><code>unzip jitsi-docker.zip *docker-compose.yml *gen-passwords.sh
+</code></pre><p>Переходим в рабочую директорию:</p><pre tabindex=0><code>cd jitsi-docker-jitsi-meet-*
+</code></pre><p>Создаём в ней <code>.env</code> файл с настройками (доменное имя и email для Let&rsquo;s Encrypt
+необходимо заменить на свои):</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-1> 1</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-2> 2</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-3> 3</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-4> 4</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-5> 5</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-6> 6</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-7> 7</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-8> 8</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-9> 9</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-10>10</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-11>11</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-12><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-12>12</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-13><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-13>13</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-14><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-14>14</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-15><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-15>15</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-16><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-16>16</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-17><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-17>17</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-18><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-18>18</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-19><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-19>19</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-20><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-20>20</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-21><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-21>21</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-22><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-22>22</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-23><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-23>23</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-24><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-24>24</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-25><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-25>25</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-26><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-26>26</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-27><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-27>27</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-28><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-28>28</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-29><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-29>29</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-30><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-30>30</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-31><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-31>31</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-32><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-32>32</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-33><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-33>33</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-34><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-34>34</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-35><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-35>35</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-36><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-36>36</a>
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-37><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-37>37</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=display:flex><span><span style=color:#57606a># General</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#953800>CONFIG</span><span style=color:#0550ae>=</span>/opt/jitsi-config
+</span></span><span style=display:flex><span><span style=color:#953800>HTTP_PORT</span><span style=color:#0550ae>=</span><span style=color:#0550ae>80</span>
+</span></span><span style=display:flex><span><span style=color:#953800>HTTPS_PORT</span><span style=color:#0550ae>=</span><span style=color:#0550ae>443</span>
+</span></span><span style=display:flex><span><span style=color:#953800>TZ</span><span style=color:#0550ae>=</span>UTC
+</span></span><span style=display:flex><span><span style=color:#953800>PUBLIC_URL</span><span style=color:#0550ae>=</span>https://meet.example.com
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#57606a># Let&#39;s Encrypt configuration</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#953800>ENABLE_LETSENCRYPT</span><span style=color:#0550ae>=</span><span style=color:#0550ae>1</span>
+</span></span><span style=display:flex><span><span style=color:#953800>LETSENCRYPT_DOMAIN</span><span style=color:#0550ae>=</span>meet.example.com
+</span></span><span style=display:flex><span><span style=color:#953800>LETSENCRYPT_EMAIL</span><span style=color:#0550ae>=</span>meet@example.com
+</span></span><span style=display:flex><span><span style=color:#953800>LETSENCRYPT_ACME_SERVER</span><span style=color:#0550ae>=</span><span style=color:#0a3069>&#34;letsencrypt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#57606a># Authentication configuration</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#953800>ENABLE_AUTH</span><span style=color:#0550ae>=</span><span style=color:#0550ae>1</span>
+</span></span><span style=display:flex><span><span style=color:#953800>ENABLE_GUESTS</span><span style=color:#0550ae>=</span><span style=color:#0550ae>1</span>
+</span></span><span style=display:flex><span><span style=color:#953800>AUTH_TYPE</span><span style=color:#0550ae>=</span>internal
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#57606a># Security</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#953800>JICOFO_AUTH_PASSWORD</span><span style=color:#0550ae>=</span><span style=color:#6639ba>test</span>
+</span></span><span style=display:flex><span><span style=color:#953800>JVB_AUTH_PASSWORD</span><span style=color:#0550ae>=</span><span style=color:#6639ba>test</span>
+</span></span><span style=display:flex><span><span style=color:#953800>JIGASI_XMPP_PASSWORD</span><span style=color:#0550ae>=</span><span style=color:#6639ba>test</span>
+</span></span><span style=display:flex><span><span style=color:#953800>JIGASI_TRANSCRIBER_PASSWORD</span><span style=color:#0550ae>=</span><span style=color:#6639ba>test</span>
+</span></span><span style=display:flex><span><span style=color:#953800>JIBRI_RECORDER_PASSWORD</span><span style=color:#0550ae>=</span><span style=color:#6639ba>test</span>
+</span></span><span style=display:flex><span><span style=color:#953800>JIBRI_XMPP_PASSWORD</span><span style=color:#0550ae>=</span><span style=color:#6639ba>test</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#57606a># Docker Compose options</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#953800>RESTART_POLICY</span><span style=color:#0550ae>=</span>unless-stopped
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#57606a># Other options</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#953800>ENABLE_WELCOME_PAGE</span><span style=color:#0550ae>=</span><span style=color:#0550ae>0</span>
+</span></span></code></pre></td></tr></table></div></div><p>Далее необходимо обновить файл <code>.env</code> случайными паролями для взаимодействия
+компонентов Jitsi Meet между собой с помощью скрипта:</p><pre tabindex=0><code># ./gen-passwords.sh
+</code></pre><p>Создаём директории для компонентов Jitsi Meet:</p><pre tabindex=0><code># mkdir -p /opt/jitsi-config/{web,transcripts,prosody/config,prosody/prosody-plugins-custom,jicofo,jvb,jigasi,jibri}
+</code></pre><p>И запускаем сервер:</p><pre tabindex=0><code># docker compose up -d
+</code></pre><p>Первый запуск может занять некоторое время (минуту-две), так как будут
+создаваться сертификаты Let&rsquo;s Encrypt (статус можно увидеть в логах).</p><p>Логи сервера можно проверить командой:</p><pre tabindex=0><code># docker compose logs web
+</code></pre><h3 id=создание-пользователей>Создание пользователей</h3><p>Пользователи хранятся на сервере Prosody. Подробней о работе с пользователями:
+<a href=https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-docker/#internal-authentication>Jitsi Meet
+authentification</a>.</p><p>Для создания пользователя необходимо зайти в контейнер <code>prosody</code>:</p><pre tabindex=0><code># docker compose exec prosody /bin/bash
+</code></pre><p>И создать пользователя:</p><pre tabindex=0><code># prosodyctl --config /config/prosody.cfg.lua register TheDesiredUsername meet.jitsi TheDesiredPassword
+</code></pre><h2 id=использование>Использование</h2><p>Для создания встречи нужно открыть <code>https://meet.example.com</code> и будет создана
+комната со случайным названием. Первый вошедший пользователь становится
+модератором.</p><p>Приведённая конфигурация требует аутентификации от модератора при создании
+комнаты (<code>ENABLE_AUTH=1</code>) и разрешает анонимный вход гостям, если во встрече
+есть модератор (<code>ENABLE_GUESTS=1</code>). Эти настройки можно изменить &ndash; разрешить
+анонимный вход и создание комнат для всех, или наоборот, запретить вход
+анонимным гостям.</p><h2 id=дополнительные-настройки>Дополнительные настройки</h2><p>При развёртывании Jitsi Meet через Docker Compose можно задавать различные
+опции через <code>.env</code> файл (полный список доступен в <code>docker-compose.yml</code>).</p><p>Некоторые полезные опции:</p><ul><li><code>DEFAULT_LANGUAGE=ru</code> - язык интерфейса по умолчанию.</li><li><code>TOOLBAR_BUTTONS=camera,chat</code> - набор доступных кнопок в интерфейсе (полный
+список в файле
+<a href=https://github.com/jitsi/jitsi-meet/blob/master/config.js#L861>config.js#L861</a>).</li></ul></div><footer class=post__footer><div class="post__tags tags clearfix"><svg class="tags__badge icon icon-tag" width="16" height="16" viewBox="0 0 32 32"><path d="M4 0h8s2 0 4 2l15 15s2 2 0 4L21 31s-2 2-4 0L2 16s-2-2-2-4V3s0-3 4-3m3 10a3 3 0 000-6 3 3 0 000 6"/></svg><ul class=tags__list><li class=tags__item><a class="tags__link btn" href=/ru/tags/linux/ rel=tag>linux</a></li><li class=tags__item><a class="tags__link btn" href=/ru/tags/jitsi/ rel=tag>jitsi</a></li><li class=tags__item><a class="tags__link btn" href=/ru/tags/docker/ rel=tag>docker</a></li></ul></div></footer></article></main></div></div><footer class=footer><div class="container footer__container flex"><div class=footer__copyright>&copy; 2026 Блог AnLar.
+<span class=footer__copyright-credits>Сгенерировано с использованием <a href=https://gohugo.io/ rel="nofollow noopener" target=_blank>Hugo</a> и темы <a href=https://github.com/mansoorbarri/roadster/ rel="nofollow noopener" target=_blank>Roadster</a>.</span></div></div></footer></div><script async defer src=/js/menu.js></script></body></html>
