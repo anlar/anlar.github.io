@@ -1,7 +1,7 @@
 ---
 title: 'Установка и настройка сервера Jitsi Meet в Docker'
 date: '2026-02-17T12:31:02+01:00'
-draft: true
+draft: false
 tags:
   - linux
   - jitsi
