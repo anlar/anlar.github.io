@@ -114,6 +114,25 @@ systemctl enable --now prosody
 
 systemctl status prosody
 
+### Prosody: shared groups
+
+```lua
+modules_enabled = {
+    -- Other modules
+    "groups"; -- Enable mod_groups
+} 
+
+groups_file = "/etc/prosody/sharedgroups.txt"
+ ```
+
+/etc/prosody/sharedgroups.txt:
+
+```
+[Support Team]
+support@example.com
+john.doe@example.com
+```
+
 ### Coturn
 
 dnf install coturn
